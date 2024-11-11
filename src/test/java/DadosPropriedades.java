@@ -87,4 +87,10 @@ public class DadosPropriedades {
                 "objectId=" + objectId +
                 ", parId='" + parId + '\'' +
                 ", parNum='" + parNum + '\'' +
-                ", shapeLength=" +
+                ", shapeLength=" + shapeLength +
+                ", shapeArea=" + shapeArea +
+                ", geometry='" + geometry + '\'' +
+                ", owner='" + owner + '\'' +
+                '}';
+    }
+}
