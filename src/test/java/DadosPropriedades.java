@@ -1,18 +1,12 @@
-
-
 import com.opencsv.bean.CsvBindByName;
 
-
 public class DadosPropriedades {
-
-
-    //String info = "Madeira-Moodle.csv";
 
     @CsvBindByName(column = "OBJECTID")
     private int objectId;
 
     @CsvBindByName(column = "PAR_ID")
-    private double parId;
+    private String parId;
 
     @CsvBindByName(column = "PAR_NUM")
     private String parNum;
@@ -29,15 +23,21 @@ public class DadosPropriedades {
     @CsvBindByName(column = "OWNER")
     private String owner;
 
+    // Getters e Setters para cada campo
+
     public int getObjectId() {
         return objectId;
     }
 
-    public double getParId() {
+    public void setObjectId(int objectId) {
+        this.objectId = objectId;
+    }
+
+    public String getParId() {
         return parId;
     }
 
-    public void setParId(double parId) {
+    public void setParId(String parId) {
         this.parId = parId;
     }
 
@@ -81,7 +81,10 @@ public class DadosPropriedades {
         this.owner = owner;
     }
 
-    public void setObjectId(int objectId) {
-        this.objectId = objectId;
-    }
-}
+    @Override
+    public String toString() {
+        return "DadosPropriedades{" +
+                "objectId=" + objectId +
+                ", parId='" + parId + '\'' +
+                ", parNum='" + parNum + '\'' +
+                ", shapeLength=" +

@@ -1,51 +1,46 @@
-
-import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
-import com.opencsv.bean.CsvBindByName;
-import java.io.FileReader;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
+import java.util.ArrayList;
 
 public class CarregarCsv {
 
-    public static List<DadosPropriedades> carregarPropriedades(String caminhoArquivo) throws IOException {
-        // Lê o arquivo CSV e mapeia para objetos da classe DadosPropriedades
-        FileReader fileReader = new FileReader(caminhoArquivo);
+    public static List<DadosPropriedades> carregarPropriedades() throws IOException {
+        // URL do arquivo bruto no GitHub
+        String urlArquivo = "https://raw.githubusercontent.com/zezocaszao/ES-2024-1Sem-LETI-GrupoF/2c9d2cb2588670acaf561e2099dba05d9b6f4c72/Madeira-Moodle.csv";
 
-        // Usando CsvToBeanBuilder para mapear os dados do CSV para a classe DadosPropriedades
-        List<DadosPropriedades> propriedades = new CsvToBeanBuilder<DadosPropriedades>(fileReader)
-                .withType(DadosPropriedades.class)  // Especifica a classe de destino
+        // Conecta à URL e cria um BufferedReader para ler o arquivo
+        URL url = new URL(urlArquivo);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
+
+        // Usa o CsvToBeanBuilder para mapear os dados do CSV para objetos DadosPropriedades
+        List<DadosPropriedades> propriedades = new CsvToBeanBuilder<DadosPropriedades>(reader)
+                .withType(DadosPropriedades.class)  // Define a classe de destino
                 .withSeparator(';')  // Define o separador de colunas como ponto e vírgula
                 .build()
                 .parse();
 
-        fileReader.close();  // Fecha o arquivo após a leitura
+        // Fecha o leitor após o mapeamento
+        reader.close();
 
         return propriedades;  // Retorna a lista de propriedades carregadas
     }
 
-    public static void main(String[] args) {
-        try {
-            // Caminho do arquivo CSV (substitua pelo caminho real do seu arquivo)
-            String caminhoArquivo = "Madeira-Moodle.csv";  // Exemplo: "caminho/para/o/arquivo/Madeira-Moodle.csv"
+public static void main(String[] args) {
+    try {
+        // Chama o método carregarPropriedades e armazena o resultado
+        List<DadosPropriedades> propriedades = carregarPropriedades();
 
-            // Carregar as propriedades do arquivo CSV
-            List<DadosPropriedades> propriedades = carregarPropriedades(caminhoArquivo);
-
-            // Exemplo de como imprimir os dados carregados
-            for (DadosPropriedades propriedade : propriedades) {
-                System.out.println("OBJECTID: " + propriedade.getObjectId());
-                System.out.println("PAR_ID: " + propriedade.getParId());
-                System.out.println("PAR_NUM: " + propriedade.getParNum());
-                System.out.println("Shape_Length: " + propriedade.getShapeLength());
-                System.out.println("Shape_Area: " + propriedade.getShapeArea());
-                System.out.println("Geometry: " + propriedade.getGeometry());
-                System.out.println("Owner: " + propriedade.getOwner());
-                System.out.println("----------");  // Separador para facilitar a leitura
-            }
-        } catch (IOException e) {
-            e.printStackTrace();  // Em caso de erro, imprime a exceção
+        // Exibe o conteúdo carregado
+        for (DadosPropriedades dados : propriedades) {
+            System.out.println(dados);
         }
+    } catch (IOException e) {
+        System.out.println("Erro ao carregar propriedades: " + e.getMessage());
     }
+}
 }
 
