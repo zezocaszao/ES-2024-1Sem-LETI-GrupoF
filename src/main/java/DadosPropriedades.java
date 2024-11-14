@@ -23,7 +23,6 @@ public class DadosPropriedades {
     @CsvBindByName(column = "OWNER")
     private String owner;
 
-    // Getters e Setters para cada campo
 
     public int getObjectId() {
         return objectId;
