@@ -16,24 +16,15 @@ public class CarregarCsv {
 
 
         List<DadosPropriedades> propriedades = new CsvToBeanBuilder<DadosPropriedades>(reader) // CsvToBeanBuilder le csvs
-                .withType(DadosPropriedades.class)  // Define a classe de destino
-                .withSeparator(';')  // Define o separador de colunas como ;
+                .withType(DadosPropriedades.class)
+                .withSeparator(';')
                 .build()
                 .parse();
         reader.close();
 
         return propriedades;
     }
+}
 
-public static void main(String[] args) {
-    try {
-        List<DadosPropriedades> propriedades = carregarPropriedades();
-        for (DadosPropriedades dados : propriedades) {
-            System.out.println(dados);
-        }
-    } catch (IOException e) {
-        System.out.println("Erro" + e.getMessage());
-    }
-}
-}
+
 

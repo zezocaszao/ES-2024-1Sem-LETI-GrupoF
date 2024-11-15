@@ -9,7 +9,6 @@ public class Grafo {
         adjacencias = new HashMap<>();
     }
 
-    // Adiciona uma propriedade ao grafo
     public void adicionarPropriedade(DadosPropriedades propriedade) {
         propriedades.put(propriedade.getObjectId(), propriedade); // Usa objectId como key
         adjacencias.put(propriedade, new ArrayList<>());

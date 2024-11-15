@@ -1,9 +1,23 @@
 import java.io.IOException;
 import java.util.List;
 
-public class correrGrafo {
+public class main {
     public static void main(String[] args) {
-        try {
+
+        /*
+         try { //ponto1
+            List<DadosPropriedades> propriedades = carregarPropriedades();
+            for (DadosPropriedades dados : propriedades) {
+                System.out.println(dados);
+            }
+        } catch (
+        IOException e) {
+            System.out.println("Erro" + e.getMessage());
+        }
+        */
+
+        /*
+        try {//ponto 2
             List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades();
             Grafo grafo = new Grafo();
             for (DadosPropriedades propriedade : propriedades) {
@@ -21,5 +35,6 @@ public class correrGrafo {
         } catch (IOException e) {
             System.out.println("Erro ao carregar propriedades: " + e.getMessage());
         }
+        */
     }
 }
