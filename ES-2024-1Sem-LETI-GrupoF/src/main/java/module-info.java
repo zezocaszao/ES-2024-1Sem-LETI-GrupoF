@@ -9,6 +9,10 @@ module iscteiul.ista.es20241semletigrupof {
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
+    requires com.opencsv;
+    requires java.sql;
+
+
 
     opens iscteiul.ista.es20241semletigrupof to javafx.fxml;
     exports iscteiul.ista.es20241semletigrupof;

@@ -1,3 +1,5 @@
+package iscteiul.ista.es20241semletigrupof;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -36,5 +38,19 @@ public class main {
             System.out.println("Erro ao carregar propriedades: " + e.getMessage());
         }
         */
+        try {
+            // Carrega os dados do CSV
+            String caminhoArquivo = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle.csv";
+            List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(caminhoArquivo);
+
+            // Constrói o grafo
+            Grafo grafo = new Grafo();
+            grafo.construirGrafo(propriedades);
+
+            // Exibe os vizinhos
+            grafo.exibirGrafo();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
