@@ -1,3 +1,5 @@
+package iscteiul.ista.es20241semletigrupof;
+
 import com.opencsv.bean.CsvBindByName;
 
 public class DadosPropriedades {

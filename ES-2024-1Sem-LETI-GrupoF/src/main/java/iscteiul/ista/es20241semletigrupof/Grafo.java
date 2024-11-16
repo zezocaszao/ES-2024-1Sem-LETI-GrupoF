@@ -1,3 +1,5 @@
+package iscteiul.ista.es20241semletigrupof;
+
 import java.util.*;
 
 public class Grafo {
