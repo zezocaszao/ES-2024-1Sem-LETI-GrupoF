@@ -39,17 +39,15 @@ public class main {
         }
         */
         try {
-            // Carrega os dados do CSV
-            String caminhoArquivo = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle.csv";
-            List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(caminhoArquivo);
+            String caminhoCsv = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle.csv";
 
-            // Constrói o grafo
+            List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(caminhoCsv);
             Grafo grafo = new Grafo();
             grafo.construirGrafo(propriedades);
 
-            // Exibe os vizinhos
             grafo.exibirGrafo();
         } catch (Exception e) {
+            System.err.println("Erro ao executar o programa: " + e.getMessage());
             e.printStackTrace();
         }
     }
