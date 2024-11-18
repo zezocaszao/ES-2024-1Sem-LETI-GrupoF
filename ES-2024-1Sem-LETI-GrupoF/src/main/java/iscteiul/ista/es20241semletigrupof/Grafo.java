@@ -15,6 +15,9 @@ public class Grafo {
         adjacencias.computeIfAbsent(idPropriedade1, k -> new HashSet<>()).add(idPropriedade2);
         adjacencias.computeIfAbsent(idPropriedade2, k -> new HashSet<>()).add(idPropriedade1);
     }
+    public Map<Integer, Set<Integer>> getAdjacencias() {
+        return adjacencias;
+    }
 
     // Método para calcular a bounding box de uma geometria
     private BoundingBox calcularBoundingBox(String geometry) {

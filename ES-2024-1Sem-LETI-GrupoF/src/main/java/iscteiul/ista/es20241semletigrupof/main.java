@@ -39,7 +39,7 @@ public class main {
         }
         */
         try {
-            String caminhoCsv = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle.csv";
+            String caminhoCsv = "C:\\Users\\marco\\Documents\\ProjectEs\\bumbs\\ES-2024-1Sem-LETI-GrupoF\\src\\main\\resources\\iscteiul\\ista\\es20241semletigrupof\\Madeira-Moodle.csv";
 
             List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(caminhoCsv);
             Grafo grafo = new Grafo();
