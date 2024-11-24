@@ -25,6 +25,16 @@ public class DadosPropriedades {
     @CsvBindByName(column = "OWNER")
     private String owner;
 
+    @CsvBindByName(column = "Freguesia")
+    private String freguesia;
+
+    @CsvBindByName(column = "Municipio")
+    private String municipio;
+
+    @CsvBindByName(column = "Ilha")
+    private String ilha;
+
+    // Getters e Setters
 
     public int getObjectId() {
         return objectId;
@@ -82,6 +92,31 @@ public class DadosPropriedades {
         this.owner = owner;
     }
 
+    public String getFreguesia() {
+        return freguesia;
+    }
+
+    public void setFreguesia(String freguesia) {
+        this.freguesia = freguesia;
+    }
+
+    public String getMunicipio() {
+        return municipio;
+    }
+
+    public void setMunicipio(String municipio) {
+        this.municipio = municipio;
+    }
+
+    public String getIlha() {
+        return ilha;
+    }
+
+    public void setIlha(String ilha) {
+        this.ilha = ilha;
+    }
+
+    // Método toString atualizado
     @Override
     public String toString() {
         return "DadosPropriedades{" +
@@ -92,6 +127,9 @@ public class DadosPropriedades {
                 ", shapeArea=" + shapeArea +
                 ", geometry='" + geometry + '\'' +
                 ", owner='" + owner + '\'' +
+                ", freguesia='" + freguesia + '\'' +
+                ", municipio='" + municipio + '\'' +
+                ", ilha='" + ilha + '\'' +
                 '}';
     }
 }
