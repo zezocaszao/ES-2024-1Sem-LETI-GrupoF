@@ -3,10 +3,12 @@ package iscteiul.ista.es20241semletigrupof;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.VBox;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public class HelloController {
@@ -80,9 +82,9 @@ public class HelloController {
         }
     }
 
+
     @FXML
     protected void onExercicio3Click() {
-
         try {
             // Caminho do arquivo CSV
             String caminhoCsv = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle-1.1.csv";
@@ -90,27 +92,60 @@ public class HelloController {
             // Carregar os dados do CSV
             List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(caminhoCsv);
 
-            // Solicitar ao utilizador o tipo de área geográfica e o valor
-            TextArea inputArea = new TextArea("Digite o tipo de área (freguesia, municipio, ilha) e o valor separados por nova linha.");
-            inputArea.setPrefHeight(100);
-            inputArea.setEditable(true);
+            // Solicitar ao utilizador o tipo de área geográfica
+            TextInputDialog tipoDialog = new TextInputDialog();
+            tipoDialog.setTitle("Seleção de Tipo de Área");
+            tipoDialog.setHeaderText("Digite o tipo de área geográfica (freguesia, municipio, ilha):");
+            tipoDialog.setContentText("Tipo de área:");
+            Optional<String> tipoAreaOpt = tipoDialog.showAndWait();
 
-            Alert inputDialog = new Alert(Alert.AlertType.INFORMATION);
-            inputDialog.setTitle("Entrada de Dados");
-            inputDialog.setHeaderText("Insira as informações para o cálculo da área média:");
-            inputDialog.getDialogPane().setContent(inputArea);
-
-            inputDialog.showAndWait();
-
-            // Recuperar o input do utilizador
-            String[] inputs = inputArea.getText().split("\n");
-            if (inputs.length < 2) {
-                showAlert("Erro", "É necessário fornecer o tipo de área e o valor separados por nova linha.");
+            if (!tipoAreaOpt.isPresent() || tipoAreaOpt.get().trim().isEmpty()) {
+                showAlert("Erro", "O tipo de área geográfica é obrigatório.");
                 return;
             }
 
-            String tipoArea = inputs[0].trim();
-            String valorArea = inputs[1].trim();
+            String tipoArea = tipoAreaOpt.get().trim().toLowerCase();
+
+            // Verificar se o tipo de área é válido
+            if (!List.of("freguesia", "municipio", "ilha").contains(tipoArea)) {
+                showAlert("Erro", "Tipo de área inválido. Use: freguesia, municipio ou ilha.");
+                return;
+            }
+
+            // Obter e exibir as áreas disponíveis
+            List<String> areasDisponiveis = CalculadoraPropriedades.obterAreasDisponiveis(propriedades, tipoArea);
+            if (areasDisponiveis.isEmpty()) {
+                showAlert("Erro", "Não há áreas disponíveis para o tipo especificado: " + tipoArea);
+                return;
+            }
+
+            StringBuilder areasTexto = new StringBuilder("Áreas disponíveis:\n");
+            for (String area : areasDisponiveis) {
+                areasTexto.append("- ").append(area).append("\n");
+            }
+
+            // Mostrar as áreas disponíveis ao utilizador
+            TextArea areasDisponiveisArea = new TextArea(areasTexto.toString());
+            areasDisponiveisArea.setEditable(false);
+            Alert areasDialog = new Alert(Alert.AlertType.INFORMATION);
+            areasDialog.setTitle("Áreas Disponíveis");
+            areasDialog.setHeaderText("Selecione uma área a partir da lista abaixo:");
+            areasDialog.getDialogPane().setContent(areasDisponiveisArea);
+            areasDialog.showAndWait();
+
+            // Solicitar o valor da área
+            TextInputDialog valorDialog = new TextInputDialog();
+            valorDialog.setTitle("Seleção de Valor da Área");
+            valorDialog.setHeaderText("Digite o valor da área geográfica (ex.: 'Arco da Calheta' ou 'Calheta'):");
+            valorDialog.setContentText("Valor da área:");
+            Optional<String> valorAreaOpt = valorDialog.showAndWait();
+
+            if (!valorAreaOpt.isPresent() || valorAreaOpt.get().trim().isEmpty()) {
+                showAlert("Erro", "O valor da área é obrigatório.");
+                return;
+            }
+
+            String valorArea = valorAreaOpt.get().trim();
 
             // Calcular a área média
             double areaMedia = CalculadoraPropriedades.calcularAreaMedia(propriedades, tipoArea, valorArea);

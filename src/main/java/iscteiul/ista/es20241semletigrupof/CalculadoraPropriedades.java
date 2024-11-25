@@ -14,6 +14,25 @@ public class CalculadoraPropriedades {
      * @param valorArea     Valor específico da área geográfica.
      * @return Área média das propriedades ou -1 se não houver propriedades correspondentes.
      */
+
+    public static List<String> obterAreasDisponiveis(List<DadosPropriedades> propriedades, String tipoArea) {
+        return propriedades.stream()
+                .map(propriedade -> {
+                    switch (tipoArea.toLowerCase()) {
+                        case "freguesia":
+                            return propriedade.getFreguesia();
+                        case "municipio":
+                            return propriedade.getMunicipio();
+                        case "ilha":
+                            return propriedade.getIlha();
+                        default:
+                            throw new IllegalArgumentException("Tipo de área inválido. Use: freguesia, municipio ou ilha.");
+                    }
+                })
+                .distinct() // Remover duplicatas
+                .sorted()   // Ordenar alfabeticamente
+                .collect(Collectors.toList());
+    }
     public static double calcularAreaMedia(List<DadosPropriedades> propriedades, String tipoArea, String valorArea) {
         // Filtrar as propriedades de acordo com o tipo de área e valor especificado
         List<DadosPropriedades> propriedadesFiltradas = propriedades.stream()

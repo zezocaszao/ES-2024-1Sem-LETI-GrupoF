@@ -60,22 +60,33 @@ public class main {
             e.printStackTrace();
         }
         */
-
+        /*
         try {
-            // Carregar propriedades do CSV
             List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(caminhoCsv);
 
-            // Exibir as propriedades carregadas
-            for (DadosPropriedades dados : propriedades) {
-                System.out.println(dados);
-            }
-
-            // Solicitar ao utilizador o tipo de área geográfica e o valor correspondente
+            // Solicitar ao utilizador o tipo de área geográfica
             Scanner scanner = new Scanner(System.in);
 
             System.out.print("Digite o tipo de área geográfica (freguesia, municipio, ilha): ");
-            String tipoArea = scanner.nextLine();
+            String tipoArea = scanner.nextLine().toLowerCase();
 
+            // Verificar se o tipo de área é válido
+            if (!List.of("freguesia", "municipio", "ilha").contains(tipoArea)) {
+                System.out.println("Tipo de área inválido. Use: freguesia, municipio ou ilha.");
+                return;
+            }
+
+            // Obter e exibir as opções disponíveis para o tipo de área escolhido
+            List<String> areasDisponiveis = CalculadoraPropriedades.obterAreasDisponiveis(propriedades, tipoArea);
+            if (areasDisponiveis.isEmpty()) {
+                System.out.println("Não há áreas disponíveis para o tipo especificado.");
+                return;
+            }
+
+            System.out.println("Áreas disponíveis:");
+            areasDisponiveis.forEach(area -> System.out.println("- " + area));
+
+            // Solicitar o valor da área ao usuário
             System.out.print("Digite o valor da área (ex.: 'Arco da Calheta' ou 'Calheta'): ");
             String valorArea = scanner.nextLine();
 
@@ -92,5 +103,10 @@ public class main {
             System.err.println("Erro ao executar o programa: " + e.getMessage());
             e.printStackTrace();
         }
+        */
+
+        // Executar a aplicação JavaFX
+        HelloApplication.main(args);
+
     }
 }
