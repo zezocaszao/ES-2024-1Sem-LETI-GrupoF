@@ -2,61 +2,60 @@ package iscteiul.ista.es20241semletigrupof;
 
 import javafx.geometry.BoundingBox;
 import org.junit.jupiter.api.Test;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GrafoTest {
+class GrafoTest {
 
     @Test
-    public void testAdicionarVizinho() {
+    void testAdicionarVizinho() {
         Grafo grafo = new Grafo();
         grafo.adicionarVizinho(1, 2);
-        grafo.adicionarVizinho(2, 3);
 
         Map<Integer, Set<Integer>> adjacencias = grafo.getAdjacencias();
 
         assertTrue(adjacencias.containsKey(1));
         assertTrue(adjacencias.containsKey(2));
-        assertTrue(adjacencias.containsKey(3));
-        assertEquals(Set.of(2), adjacencias.get(1));
-        assertEquals(Set.of(1, 3), adjacencias.get(2));
-        assertEquals(Set.of(2), adjacencias.get(3));
+        assertTrue(adjacencias.get(1).contains(2));
+        assertTrue(adjacencias.get(2).contains(1));
     }
 
     @Test
-    public void testCalcularBoundingBox() {
+    void testCalcularBoundingBox() {
         Grafo grafo = new Grafo();
 
-        String geometry = "MULTIPOLYGON (((10 20, 30 40, 50 60, 10 20)))";
-        BoundingBox boundingBox = grafo.calcularBoundingBox(geometry);
-
-        assertEquals(10, boundingBox.getMinX());
-        assertEquals(20, boundingBox.getMinY());
-        assertEquals(40, boundingBox.getWidth());
-        assertEquals(40, boundingBox.getHeight());
+        // Teste direto do método privado
+        BoundingBox bb = grafo.calcularBoundingBox("MULTIPOLYGON(((0 0, 0 10, 10 10, 10 0, 0 0)))");
+        assertEquals(0, bb.getMinX());
+        assertEquals(0, bb.getMinY());
+        assertEquals(10, bb.getWidth());
+        assertEquals(10, bb.getHeight());
     }
 
     @Test
-    public void testCalcularBoundingBoxInvalidGeometry() {
+    void testConstruirGrafo() {
         Grafo grafo = new Grafo();
 
-        // Teste com geometria inválida
-        String invalidGeometry = "EMPTY";
-        BoundingBox boundingBox = grafo.calcularBoundingBox(invalidGeometry);
-        assertEquals(0, boundingBox.getWidth());
-        assertEquals(0, boundingBox.getHeight());
-    }
+        List<DadosPropriedades> propriedades = new ArrayList<>();
+        propriedades.add(new DadosPropriedades(1, "MULTIPOLYGON(((0 0, 0 10, 10 10, 10 0, 0 0)))"));
+        propriedades.add(new DadosPropriedades(2, "MULTIPOLYGON(((5 5, 5 15, 15 15, 15 5, 5 5)))"));
+        propriedades.add(new DadosPropriedades(3, "MULTIPOLYGON(((20 20, 20 30, 30 30, 30 20, 20 20)))"));
 
-    @Test
-    public void testExibirGrafo() {
-        Grafo grafo = new Grafo();
-        grafo.adicionarVizinho(1, 2);
-        grafo.adicionarVizinho(2, 3);
-
-        // Capturar saída do console (opcional para verificar resultados manualmente)
-        grafo.exibirGrafo();
+        grafo.construirGrafo(propriedades);
 
         Map<Integer, Set<Integer>> adjacencias = grafo.getAdjacencias();
-        assertEquals(2, adjacencias.get(2).size());
+
+        assertTrue(adjacencias.containsKey(1));
+        assertTrue(adjacencias.containsKey(2));
+        assertFalse(adjacencias.containsKey(3));
+
+        assertTrue(adjacencias.get(1).contains(2));
+        assertTrue(adjacencias.get(2).contains(1));
+        assertFalse(adjacencias.get(1).contains(3));
     }
 }

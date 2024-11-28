@@ -34,8 +34,10 @@ public class DadosPropriedades {
     @CsvBindByName(column = "Ilha")
     private String ilha;
 
-    // Construtor sem argumentos (necessário para o OpenCSV)
-    public DadosPropriedades() {
+    // Construtor com argumentos necessários
+    public DadosPropriedades(int objectId, String geometry) {
+        this.objectId = objectId;
+        this.geometry = geometry;
     }
 
     // Getters e Setters
