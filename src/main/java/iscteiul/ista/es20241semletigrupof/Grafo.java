@@ -20,7 +20,7 @@ public class Grafo {
     }
 
     // Método para calcular a bounding box de uma geometria
-    private BoundingBox calcularBoundingBox(String geometry) {
+    BoundingBox calcularBoundingBox(String geometry) {
         double minX = Double.MAX_VALUE, minY = Double.MAX_VALUE;
         double maxX = Double.MIN_VALUE, maxY = Double.MIN_VALUE;
 
