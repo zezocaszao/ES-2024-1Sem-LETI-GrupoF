@@ -1,6 +1,11 @@
 package iscteiul.ista.es20241semletigrupof;
 
 import javafx.geometry.BoundingBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
+import javafx.scene.text.Text;
+
 import java.util.*;
 
 public class Grafo {
@@ -83,4 +88,6 @@ public class Grafo {
             System.out.println("Propriedade " + entry.getKey() + " é vizinha de: " + entry.getValue());
         }
     }
+
+
 }

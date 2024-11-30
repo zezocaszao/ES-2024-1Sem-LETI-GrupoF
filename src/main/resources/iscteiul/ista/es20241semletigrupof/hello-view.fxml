@@ -6,6 +6,7 @@
 <?import javafx.scene.text.Text?>
 
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Pane?>
 <GridPane xmlns:fx="http://javafx.com/fxml" fx:controller="iscteiul.ista.es20241semletigrupof.HelloController"
           hgap="10" vgap="10" alignment="center">
     <padding>
@@ -26,5 +27,6 @@
     <!-- Área dinâmica -->
     <VBox fx:id="container" GridPane.rowIndex="4" GridPane.columnSpan="2" alignment="top_center" spacing="10">
         <!-- O conteúdo dinâmico será adicionado aqui -->
+        <Pane fx:id="paneGrafo" prefHeight="600" prefWidth="800" style="-fx-background-color: #f0f0f0;" />
     </VBox>
 </GridPane>

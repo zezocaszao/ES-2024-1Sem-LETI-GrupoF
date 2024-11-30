@@ -34,12 +34,6 @@ public class DadosPropriedades {
     @CsvBindByName(column = "Ilha")
     private String ilha;
 
-    // Construtor com argumentos necessários
-    public DadosPropriedades(int objectId, String geometry) {
-        this.objectId = objectId;
-        this.geometry = geometry;
-    }
-
     // Getters e Setters
 
     public int getObjectId() {
