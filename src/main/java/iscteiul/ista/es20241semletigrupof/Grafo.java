@@ -77,6 +77,9 @@ public class Grafo {
         }
     }
 
+    public boolean saoVizinhos(int idPropriedade1, int idPropriedade2) {
+        return adjacencias.getOrDefault(idPropriedade1, new HashSet<>()).contains(idPropriedade2);
+    }
 
     public void exibirGrafo() {
         for (Map.Entry<Integer, Set<Integer>> entry : adjacencias.entrySet()) {
