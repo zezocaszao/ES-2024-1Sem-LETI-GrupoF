@@ -1,21 +1,37 @@
 package iscteiul.ista.es20241semletigrupof;
 
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+
+import java.util.*;
 
 public class HelloController {
 
 
     @FXML
     private VBox container;
+
+    @FXML
+    private Pane paneGrafo;
+
+    // Variáveis para armazenar a posição do mouse
+    private double mouseX = 0;
+    private double mouseY = 0;
+
+
 
     @FXML
     protected void onExercicio1Click() {
@@ -45,33 +61,120 @@ public class HelloController {
     @FXML
     protected void onExercicio2Click() {
         try {
+            // Carregar as propriedades a partir do arquivo CSV
             String caminhoCsv = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle-1.1.csv";
-
             List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(caminhoCsv);
 
+            // Criar o grafo
             Grafo grafo = new Grafo();
-            grafo.construirGrafo(propriedades);
+            grafo.construirGrafo(propriedades); // Construir o grafo com as vizinhanças
 
-            StringBuilder grafoTexto = new StringBuilder();
+            // Criar um painel para desenhar
+            Pane pane = new Pane();
+            Map<Integer, Circle> nos = new HashMap<>(); // Armazenar os círculos que representam as propriedades
+
+            // Ajustar a posição dos nós
+            double xInicio = 100; // Posição inicial horizontal para os nós azuis
+            double yInicio = 100; // Posição inicial vertical para os nós azuis
+            double distanciaHorizontal = 200; // Distância horizontal entre os nós azuis (apenas um por linha)
+            double distanciaVertical = 200;   // Distância vertical entre as linhas de nós azuis
+
+            // Variável para controlar a linha dos nós azuis
+            int linhaAzul = 0;
+
+            double maxX = 0;  // Para controlar o tamanho máximo em X (largura)
+            double maxY = 0;  // Para controlar o tamanho máximo em Y (altura)
+
+            // Para cada conjunto de vizinhos, desenhar os nós e conexões
             for (Map.Entry<Integer, Set<Integer>> entry : grafo.getAdjacencias().entrySet()) {
-                grafoTexto.append("Propriedade ").append(entry.getKey())
-                        .append(" é vizinha de: ").append(entry.getValue())
-                        .append("\n");
+                Integer idPropriedade = entry.getKey();
+                Set<Integer> vizinhos = entry.getValue();
+
+                // Ajustar a posição do nó azul em sua linha
+                double xPos = xInicio;  // Um único nó azul por linha, então a posição horizontal é fixa
+                double yPos = yInicio + linhaAzul * distanciaVertical; // Cada linha vai para baixo
+
+                // Criar um círculo para o nó azul (propriedade)
+                Circle circulo = new Circle(20);
+                circulo.setFill(Color.BLUE);
+                circulo.setStroke(Color.BLACK);
+                circulo.setCenterX(xPos);
+                circulo.setCenterY(yPos);
+
+                // Adicionar o texto com o identificador da propriedade
+                Text texto = new Text(String.valueOf(idPropriedade));
+                texto.setX(circulo.getCenterX() - 10);
+                texto.setY(circulo.getCenterY() + 5);
+
+                // Adicionar o nó azul (propriedade) ao painel
+                pane.getChildren().addAll(circulo, texto);
+                nos.put(idPropriedade, circulo);
+
+                // Desenhar as conexões (linhas) para os vizinhos (nós verdes)
+                int offset = 1; // Para controlar a disposição dos vizinhos ao longo de uma linha
+                for (Integer vizinhoId : vizinhos) {
+                    // Criar um círculo para o vizinho (nó verde)
+                    Circle circuloVizinho = new Circle(20);
+                    circuloVizinho.setFill(Color.GREEN);
+                    circuloVizinho.setStroke(Color.BLACK);
+
+                    // Posicionar o vizinho ligeiramente abaixo do nó azul
+                    circuloVizinho.setCenterX(xPos + offset * distanciaHorizontal); // Ajuste horizontal dos vizinhos
+                    circuloVizinho.setCenterY(yPos + distanciaVertical);            // Ajuste vertical dos vizinhos
+
+                    // Adicionar o texto para o vizinho
+                    Text textoVizinho = new Text(String.valueOf(vizinhoId));
+                    textoVizinho.setX(circuloVizinho.getCenterX() - 10);
+                    textoVizinho.setY(circuloVizinho.getCenterY() + 5);
+
+                    // Adicionar o vizinho ao painel
+                    pane.getChildren().addAll(circuloVizinho, textoVizinho);
+                    nos.put(vizinhoId, circuloVizinho);
+
+                    // Desenhar a linha conectando o nó azul ao vizinho (nó verde)
+                    Line linha = new Line();
+                    linha.setStartX(circulo.getCenterX());
+                    linha.setStartY(circulo.getCenterY());
+                    linha.setEndX(circuloVizinho.getCenterX());
+                    linha.setEndY(circuloVizinho.getCenterY());
+                    linha.setStroke(Color.BLACK);
+
+                    // Adicionar a linha ao painel
+                    pane.getChildren().add(linha);
+
+                    offset++; // Incrementa para posicionar o próximo vizinho em uma posição à direita
+                }
+                // Atualizar os limites máximos do painel
+                maxX = Math.max(maxX, xPos + distanciaHorizontal * offset);
+                maxY = Math.max(maxY, yPos + distanciaVertical);
+                linhaAzul++; // Incrementar para a próxima linha de nós azuis
             }
+            // Ajustar o tamanho preferido do painel com base no conteúdo
+            pane.setMinSize(maxX + 100, maxY + 100);  // Ajuste automático baseado no conteúdo
+            pane.setPrefSize(maxX + 100, maxY + 100);  // Adicionar margens para o conteúdo
 
-            TextArea textArea = new TextArea();
-            textArea.setText(grafoTexto.toString());
-            textArea.setEditable(false);
-            textArea.setPrefHeight(400);
-            textArea.setPrefWidth(600);
+            // Criar um ScrollPane para permitir o scroll dentro do painel
+            ScrollPane scrollPane = new ScrollPane(pane);
+            scrollPane.setFitToHeight(true); // Ajustar automaticamente à altura
+            scrollPane.setFitToWidth(true);  // Ajustar automaticamente à largura
+            scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS); // Sempre mostrar barra de rolagem vertical
 
-            container.getChildren().clear();
-            container.getChildren().add(textArea);
+            // Criar uma nova janela (Stage) para exibir o conteúdo
+            Stage novaJanela = new Stage();
+            novaJanela.setTitle("Exibição do Grafo");
+            Scene novaCena = new Scene(scrollPane, 800, 600);
+            novaJanela.setScene(novaCena);
+
+            // Mostrar a nova janela
+            novaJanela.show();
 
         } catch (Exception e) {
-            showAlert("Erro", "Não foi possível carregar os dados: " + e.getMessage());
+            showAlert("Erro", "Não foi possível carregar os dados ou desenhar o grafo: " + e.getMessage());
+            e.printStackTrace();
         }
     }
+
+
 
 
     @FXML
