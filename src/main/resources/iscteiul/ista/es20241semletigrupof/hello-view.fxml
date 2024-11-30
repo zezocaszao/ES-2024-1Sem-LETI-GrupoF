@@ -14,7 +14,7 @@
     </padding>
 
     <!-- Título -->
-    <Text text="Áreas Geográficas" style="-fx-font-size: 20px;" GridPane.columnSpan="2" GridPane.halignment="center"/>
+    <Text text="Áreas Geográficas" style="-fx-font-size: 20px;" GridPane.columnSpan="2" GridPane.halignment="left"/>
 
     <!-- Botões para os exercícios -->
     <Button text="Exercício 1" onAction="#onExercicio1Click" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
@@ -25,8 +25,9 @@
     <Button text="Exercício 6" onAction="#onExercicio6Click" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
     <!-- Área dinâmica -->
-    <VBox fx:id="container" GridPane.rowIndex="4" GridPane.columnSpan="2" alignment="top_center" spacing="10">
-        <!-- O conteúdo dinâmico será adicionado aqui -->
-        <Pane fx:id="paneGrafo" prefHeight="600" prefWidth="800" style="-fx-background-color: #f0f0f0;" />
+    <VBox fx:id="container" GridPane.rowIndex="4" GridPane.columnSpan="2" alignment="CENTER" spacing="10">
+        <Pane fx:id="paneGrafo" prefHeight="600" prefWidth="800" maxWidth="800" style="-fx-background-color: #f0f0f0;" />
     </VBox>
+
+
 </GridPane>
