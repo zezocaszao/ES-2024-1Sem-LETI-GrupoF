@@ -1,11 +1,9 @@
 package iscteiul.ista.es20241semletigrupof;
 
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -13,9 +11,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class HelloController {
@@ -27,43 +30,92 @@ public class HelloController {
     @FXML
     private Pane paneGrafo;
 
+    @FXML
+    private Label nomeArquivoLabel; // Variável para o Label
+
+    private File arquivoCSV; // Variável para armazenar o arquivo CSV carregado
+
     // Variáveis para armazenar a posição do mouse
     private double mouseX = 0;
     private double mouseY = 0;
 
+    public void onCarregarCSVClick() {
+        // Cria uma instância do FileChooser
+        FileChooser fileChooser = new FileChooser();
 
+        // Filtra os tipos de ficheiros para mostrar apenas CSV
+        FileChooser.ExtensionFilter filtroCSV = new FileChooser.ExtensionFilter("CSV Files", "*.csv");
+        fileChooser.getExtensionFilters().add(filtroCSV);
+
+        // Mostra a caixa de diálogo para o usuário escolher o arquivo
+        Stage stage = new Stage();
+        File arquivoSelecionado = fileChooser.showOpenDialog(stage);
+
+        // Se um arquivo foi selecionado
+        if (arquivoSelecionado != null) {
+            // Armazena o arquivo
+            arquivoCSV = arquivoSelecionado;
+
+            // Atualiza o texto do Label para mostrar o nome do arquivo selecionado
+            nomeArquivoLabel.setText(arquivoSelecionado.getName());
+        } else {
+            // Caso nenhum arquivo seja selecionado, reseta o nome do arquivo
+            nomeArquivoLabel.setText("Nenhum arquivo selecionado");
+        }
+    }
 
     @FXML
     protected void onExercicio1Click() {
         try {
+            // Verifica se um arquivo foi carregado
+            if (arquivoCSV == null) {
+                showAlert("Erro", "Nenhum arquivo CSV foi carregado.");
+                return;
+            }
 
-            String caminhoCsv = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle-1.1.csv";
+            // Carregar os dados do CSV
+            List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(arquivoCSV.getAbsolutePath());
 
-            List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(caminhoCsv);
+            // Criar um TextArea para exibir os dados
             TextArea textArea = new TextArea();
             textArea.setEditable(false);
             textArea.setPrefHeight(400);
             textArea.setPrefWidth(600);
 
+            // Construir o texto a partir das propriedades
             StringBuilder stringBuilder = new StringBuilder();
             for (DadosPropriedades propriedade : propriedades) {
                 stringBuilder.append(propriedade.toString()).append("\n");
             }
-
             textArea.setText(stringBuilder.toString());
-            container.getChildren().add(textArea);
+
+            // Criar uma nova janela
+            Stage novaJanela = new Stage();
+            novaJanela.setTitle("Exercício 1 - Dados Carregados");
+
+            // Adicionar o TextArea a um Scene e exibir na nova janela
+            VBox root = new VBox(textArea);
+            root.setPadding(new Insets(10));
+            Scene scene = new Scene(root, 650, 450);
+            novaJanela.setScene(scene);
+
+            // Exibir a nova janela
+            novaJanela.show();
 
         } catch (Exception e) {
             showAlert("Erro", "Não foi possível carregar os dados: " + e.getMessage());
         }
     }
 
+
     @FXML
     protected void onExercicio2Click() {
         try {
             // Carregar as propriedades a partir do arquivo CSV
-            String caminhoCsv = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle-1.1.csv";
-            List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(caminhoCsv);
+            //String caminhoCsv = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle-1.1.csv";
+           // List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(caminhoCsv);
+            List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(arquivoCSV.getAbsolutePath());
+
 
             // Criar o grafo
             Grafo grafo = new Grafo();
@@ -180,9 +232,11 @@ public class HelloController {
     @FXML
     protected void onExercicio3Click() {
         try {
-            String caminhoCsv = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle-1.1.csv";
+            //String caminhoCsv = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle-1.1.csv";
 
-            List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(caminhoCsv);
+            //List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(caminhoCsv);
+            List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(arquivoCSV.getAbsolutePath());
+
             TextInputDialog tipoDialog = new TextInputDialog();
             tipoDialog.setTitle("Seleção de Tipo de Área");
             tipoDialog.setHeaderText("Digite o tipo de área geográfica (freguesia, municipio, ilha):");
