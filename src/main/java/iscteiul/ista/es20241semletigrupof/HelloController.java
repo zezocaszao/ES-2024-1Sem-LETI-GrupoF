@@ -390,7 +390,52 @@ public class HelloController {
 
     @FXML
     protected void onExercicio6Click() {
-        showAlert("Exercício 6", "Você selecionou o Exercício 6.");
+        try {
+            // Verifica se um arquivo CSV foi carregado
+            if (arquivoCSV == null) {
+                showAlert("Erro", "Nenhum arquivo CSV foi carregado.");
+                return;
+            }
+
+            // Carregar os dados do CSV
+            List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(arquivoCSV.getAbsolutePath());
+
+            // Gerar sugestões de trocas
+            List<TrocaPropriedades> trocasSugeridas = SugestaoTrocas.sugerirTrocas(propriedades);
+
+            if (trocasSugeridas.isEmpty()) {
+                showAlert("Resultado", "Não foram encontradas sugestões de troca.");
+            } else {
+                // Criar uma área de texto para exibir as sugestões de troca
+                StringBuilder sugestoesTexto = new StringBuilder("Sugestões de Trocas:\n");
+                for (TrocaPropriedades troca : trocasSugeridas) {
+                    sugestoesTexto.append(troca.toString()).append("\n");
+                }
+
+                // Criar um TextArea para exibir as sugestões
+                TextArea sugestoesArea = new TextArea(sugestoesTexto.toString());
+                sugestoesArea.setEditable(false);
+                sugestoesArea.setPrefHeight(400);
+                sugestoesArea.setPrefWidth(600);
+
+                // Criar uma nova janela para exibir as sugestões
+                Stage novaJanela = new Stage();
+                novaJanela.setTitle("Exercício 6 - Sugestões de Trocas");
+
+                // Adicionar o TextArea a um Scene e exibir na nova janela
+                VBox root = new VBox(sugestoesArea);
+                root.setPadding(new Insets(10));
+                Scene scene = new Scene(root, 650, 450);
+                novaJanela.setScene(scene);
+
+                // Exibir a nova janela
+                novaJanela.show();
+            }
+
+        } catch (Exception e) {
+            showAlert("Erro", "Não foi possível gerar as sugestões de troca: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     private void showAlert(String title, String content) {

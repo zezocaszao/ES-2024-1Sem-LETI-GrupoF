@@ -8,13 +8,13 @@ import java.util.Scanner;
 public class main {
     public static void main(String[] args) {
 
-      //  String caminhoCsv = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle-1.1.csv";
+       String caminhoCsv = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle-1.1.csv";
 
 
 
-      //  HelloApplication.main(args);
+        HelloApplication.main(args);
 
-        try {
+       /* try {
             // Caminho do arquivo CSV
             String caminhoCsv = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle-1.1.csv";
 
@@ -32,6 +32,6 @@ public class main {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+    */
     }
 }
