@@ -2,7 +2,7 @@ package iscteiul.ista.es20241semletigrupof;
 
 import java.util.*;
 
-public class SugestaoTrocas { // falta fazer a 4(area media) e a 5(para ter os vizinhos)
+public class SugestaoTrocas { // falta fazer  a 5(para ter os vizinhos)
 
     // Método para gerar sugestões de troca
     public static List<TrocaPropriedades> sugerirTrocas(List<DadosPropriedades> propriedades) {
@@ -31,10 +31,12 @@ public class SugestaoTrocas { // falta fazer a 4(area media) e a 5(para ter os v
                     for (DadosPropriedades prop1 : propriedades1) {
                         for (DadosPropriedades prop2 : propriedades2) {
                             // Calcular a melhoria na área média
+                            String tipoArea = "freguesia"; // Ou "municipio", "ilha", dependendo do caso
+                            String areaEscolhida = prop1.getFreguesia(); // Supondo que a área escolhida seja a freguesia
 
-                            double areaMediaAntes1 = calcularAreaMediaOwner(proprietario1, propriedadesPorProprietario.get(proprietario1));
-                            double areaMediaAntes2 = calcularAreaMediaOwner(proprietario2, propriedadesPorProprietario.get(proprietario2));
-
+                            // Chama o método da outra classe para calcular a área média
+                            double areaMediaAntes1 = CalcularPropriedadesOwners.calcularAreaMediaPorDono(propriedades, tipoArea, areaEscolhida, proprietario1);
+                            double areaMediaAntes2 = CalcularPropriedadesOwners.calcularAreaMediaPorDono(propriedades, tipoArea, areaEscolhida, proprietario2);
 
                             // Criar cópias das listas de propriedades para cada proprietário
                             List<DadosPropriedades> propriedadesTemp1 = new ArrayList<>(propriedades1);
@@ -47,8 +49,8 @@ public class SugestaoTrocas { // falta fazer a 4(area media) e a 5(para ter os v
                             propriedadesTemp2.add(prop1);
 
                             // Calcular as áreas médias após a troca
-                            double areaMediaDepois1 = calcularAreaMediaOwner(proprietario1, propriedadesTemp1);
-                            double areaMediaDepois2 = calcularAreaMediaOwner(proprietario2, propriedadesTemp2);
+                            double areaMediaDepois1 = CalcularPropriedadesOwners.calcularAreaMediaPorDono(propriedades, tipoArea, areaEscolhida, proprietario1);
+                            double areaMediaDepois2 = CalcularPropriedadesOwners.calcularAreaMediaPorDono(propriedades, tipoArea, areaEscolhida, proprietario2);
 
                             double melhoria1 = areaMediaDepois1 - areaMediaAntes1;
                             double melhoria2 = areaMediaDepois2 - areaMediaAntes2;
@@ -68,31 +70,4 @@ public class SugestaoTrocas { // falta fazer a 4(area media) e a 5(para ter os v
         }
         return trocasSugeridas;
     }
-        public static double calcularAreaMediaOwner(String proprietario, List<DadosPropriedades> propriedades) {
-            double areaTotal = 0;
-            int quantidadePropriedades = propriedades.size();
-
-            for (DadosPropriedades propriedade : propriedades) {
-                areaTotal += propriedade.getShapeArea();
-            }
-
-            return quantidadePropriedades > 0 ? areaTotal / quantidadePropriedades : 0;
-        }
-
-        // Passo 3: Ordenar as sugestões por melhoria e potencialidade
-        /* trocasSugeridas.sort((t1, t2) -> {
-            // Priorizar pela maior melhoria
-            int comparacaoMelhoria = Double.compare(t2.getMelhoriaProprietario1() + t2.getMelhoriaProprietario2(),
-                    t1.getMelhoriaProprietario1() + t1.getMelhoriaProprietario2());
-            if (comparacaoMelhoria == 0) {
-                // Em caso de empate, priorizar pela menor diferença de áreas
-                return Double.compare(t1.getPotencialidadeTroca(), t2.getPotencialidadeTroca());
-            }
-            return comparacaoMelhoria;
-        });
-
-
-    }*/
-
-
 }

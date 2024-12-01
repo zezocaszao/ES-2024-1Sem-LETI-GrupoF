@@ -1,7 +1,11 @@
 package iscteiul.ista.es20241semletigrupof;
 
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -13,6 +17,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 
@@ -33,6 +38,9 @@ public class HelloController {
     private Label nomeArquivoLabel; // Variável para o Label
 
     private File arquivoCSV; // Variável para armazenar o arquivo CSV carregado
+
+    @FXML
+    private ChoiceBox<String> tipoAreaChoiceBox;
 
     // Variáveis para armazenar a posição do mouse
     private double mouseX = 0;
@@ -399,55 +407,67 @@ public class HelloController {
     }
 
     @FXML
-    protected void onExercicio6Click() {
+    public void onExercicio6Click() {
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setTitle("Exercício 6 - Sugestões de Trocas");
 
-        try {
-            // Verifica se um arquivo CSV foi carregado
-            if (arquivoCSV == null) {
-                showAlert("Erro", "Nenhum arquivo CSV foi carregado.");
+        VBox layout = new VBox(10);
+        layout.setPadding(new Insets(10));
+
+        Label tipoAreaLabel = new Label("Selecione o tipo de área:");
+        ChoiceBox<String> tipoAreaChoiceBox = new ChoiceBox<>(FXCollections.observableArrayList("Freguesia", "Município", "Ilha"));
+
+        Button gerarSugestoesButton = new Button("Gerar Sugestões");
+        TableView<TrocaPropriedades> tabelaSugestoes = new TableView<>();
+
+        TableColumn<TrocaPropriedades, String> prop1Column = new TableColumn<>("Propriedade 1");
+        prop1Column.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getProp1().toString()));
+
+        TableColumn<TrocaPropriedades, String> prop2Column = new TableColumn<>("Propriedade 2");
+        prop2Column.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getProp2().toString()));
+
+        TableColumn<TrocaPropriedades, Double> melhoria1Column = new TableColumn<>("Melhoria Proprietário 1");
+        melhoria1Column.setCellValueFactory(data -> new SimpleDoubleProperty(data.getValue().getMelhoriaProprietario1()).asObject());
+
+        TableColumn<TrocaPropriedades, Double> melhoria2Column = new TableColumn<>("Melhoria Proprietário 2");
+        melhoria2Column.setCellValueFactory(data -> new SimpleDoubleProperty(data.getValue().getMelhoriaProprietario2()).asObject());
+
+        tabelaSugestoes.getColumns().addAll(prop1Column, prop2Column, melhoria1Column, melhoria2Column);
+
+        gerarSugestoesButton.setOnAction(e -> {
+            String tipoAreaSelecionado = tipoAreaChoiceBox.getValue();
+            if (tipoAreaSelecionado == null) {
+                Alert alert = new Alert(Alert.AlertType.WARNING, "Por favor, selecione um tipo de área.", ButtonType.OK);
+                alert.showAndWait();
                 return;
             }
 
-            // Carregar os dados do CSV
-            List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(arquivoCSV.getAbsolutePath());
+            try {
+                // Substitua "caminho/do/arquivo.csv" pelo caminho real do arquivo CSV
+                String caminhoArquivo = arquivoCSV.getAbsolutePath();
 
-            // Gerar sugestões de trocas
-            List<TrocaPropriedades> trocasSugeridas = SugestaoTrocas.sugerirTrocas(propriedades);
+                List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(caminhoArquivo);
 
-            if (trocasSugeridas.isEmpty()) {
-                showAlert("Resultado", "Não foram encontradas sugestões de troca.");
-            } else {
-                // Criar uma área de texto para exibir as sugestões de troca
-                StringBuilder sugestoesTexto = new StringBuilder("Sugestões de Trocas:\n");
-                for (TrocaPropriedades troca : trocasSugeridas) {
-                    sugestoesTexto.append(troca.toString()).append("\n");
-                }
+                // Gerar as sugestões
+                List<TrocaPropriedades> trocasSugeridas = SugestaoTrocas.sugerirTrocas(propriedades);
 
-                // Criar um TextArea para exibir as sugestões
-                TextArea sugestoesArea = new TextArea(sugestoesTexto.toString());
-                sugestoesArea.setEditable(false);
-                sugestoesArea.setPrefHeight(400);
-                sugestoesArea.setPrefWidth(600);
-
-                // Criar uma nova janela para exibir as sugestões
-                Stage novaJanela = new Stage();
-                novaJanela.setTitle("Exercício 6 - Sugestões de Trocas");
-
-                // Adicionar o TextArea a um Scene e exibir na nova janela
-                VBox root = new VBox(sugestoesArea);
-                root.setPadding(new Insets(10));
-                Scene scene = new Scene(root, 650, 450);
-                novaJanela.setScene(scene);
-
-                // Exibir a nova janela
-                novaJanela.show();
+                // Atualizar a tabela com as sugestões
+                tabelaSugestoes.getItems().setAll(trocasSugeridas);
+            } catch (Exception ex) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Erro ao carregar o arquivo CSV: " + ex.getMessage(), ButtonType.OK);
+                alert.showAndWait();
             }
+        });
 
-        } catch (Exception e) {
-            showAlert("Erro", "Não foi possível gerar as sugestões de troca: " + e.getMessage());
-            e.printStackTrace();
-        }
+        layout.getChildren().addAll(tipoAreaLabel, tipoAreaChoiceBox, gerarSugestoesButton, tabelaSugestoes);
+
+        Scene scene = new Scene(layout, 600, 400);
+        stage.setScene(scene);
+        stage.showAndWait();
     }
+
+
 
     private void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
