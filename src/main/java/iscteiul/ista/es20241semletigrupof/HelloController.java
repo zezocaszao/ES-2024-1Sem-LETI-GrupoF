@@ -1,98 +1,242 @@
 package iscteiul.ista.es20241semletigrupof;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextInputDialog;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
+import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
 
 public class HelloController {
 
 
     @FXML
-    private VBox container; // VBox do layout FXML para adicionar o TextArea dinamicamente.
+    private VBox container;
+
+    @FXML
+    private Pane paneGrafo;
+
+    @FXML
+    private Label nomeArquivoLabel; // Variável para o Label
+
+    private File arquivoCSV; // Variável para armazenar o arquivo CSV carregado
+
+    // Variáveis para armazenar a posição do mouse
+    private double mouseX = 0;
+    private double mouseY = 0;
+
+    public void onCarregarCSVClick() {
+        // Cria uma instância do FileChooser
+        FileChooser fileChooser = new FileChooser();
+
+        // Filtra os tipos de ficheiros para mostrar apenas CSV
+        FileChooser.ExtensionFilter filtroCSV = new FileChooser.ExtensionFilter("CSV Files", "*.csv");
+        fileChooser.getExtensionFilters().add(filtroCSV);
+
+        // Mostra a caixa de diálogo para o usuário escolher o arquivo
+        Stage stage = new Stage();
+        File arquivoSelecionado = fileChooser.showOpenDialog(stage);
+
+        // Se um arquivo foi selecionado
+        if (arquivoSelecionado != null) {
+            // Armazena o arquivo
+            arquivoCSV = arquivoSelecionado;
+
+            // Atualiza o texto do Label para mostrar o nome do arquivo selecionado
+            nomeArquivoLabel.setText(arquivoSelecionado.getName());
+        } else {
+            // Caso nenhum arquivo seja selecionado, reseta o nome do arquivo
+            nomeArquivoLabel.setText("Nenhum arquivo selecionado");
+        }
+    }
 
     @FXML
     protected void onExercicio1Click() {
         try {
-            // Caminho do arquivo CSV
-            String caminhoCsv = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle-1.1.csv";
+            // Verifica se um arquivo foi carregado
+            if (arquivoCSV == null) {
+                showAlert("Erro", "Nenhum arquivo CSV foi carregado.");
+                return;
+            }
 
             // Carregar os dados do CSV
-            List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(caminhoCsv);
+            List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(arquivoCSV.getAbsolutePath());
 
-            // Mostrar os dados na interface
+            // Criar um TextArea para exibir os dados
             TextArea textArea = new TextArea();
             textArea.setEditable(false);
             textArea.setPrefHeight(400);
             textArea.setPrefWidth(600);
 
+            // Construir o texto a partir das propriedades
             StringBuilder stringBuilder = new StringBuilder();
             for (DadosPropriedades propriedade : propriedades) {
                 stringBuilder.append(propriedade.toString()).append("\n");
             }
-
             textArea.setText(stringBuilder.toString());
-            container.getChildren().add(textArea); // Adiciona o TextArea ao layout
+
+            // Criar uma nova janela
+            Stage novaJanela = new Stage();
+            novaJanela.setTitle("Exercício 1 - Dados Carregados");
+
+            // Adicionar o TextArea a um Scene e exibir na nova janela
+            VBox root = new VBox(textArea);
+            root.setPadding(new Insets(10));
+            Scene scene = new Scene(root, 650, 450);
+            novaJanela.setScene(scene);
+
+            // Exibir a nova janela
+            novaJanela.show();
 
         } catch (Exception e) {
             showAlert("Erro", "Não foi possível carregar os dados: " + e.getMessage());
         }
     }
+
 
     @FXML
     protected void onExercicio2Click() {
         try {
-            // Caminho do arquivo CSV
-            String caminhoCsv = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle-1.1.csv";
+            // Carregar as propriedades a partir do arquivo CSV
+            //String caminhoCsv = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle-1.1.csv";
+           // List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(caminhoCsv);
+            List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(arquivoCSV.getAbsolutePath());
 
-            // Carregar os dados do CSV
-            List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(caminhoCsv);
 
-            // Construir o grafo
+            // Criar o grafo
             Grafo grafo = new Grafo();
-            grafo.construirGrafo(propriedades);
+            grafo.construirGrafo(propriedades); // Construir o grafo com as vizinhanças
 
-            // Capturar a saída do método exibirGrafo
-            StringBuilder grafoTexto = new StringBuilder();
+            // Criar um painel para desenhar
+            Pane pane = new Pane();
+            Map<Integer, Circle> nos = new HashMap<>(); // Armazenar os círculos que representam as propriedades
+
+            // Ajustar a posição dos nós
+            double xInicio = 100; // Posição inicial horizontal para os nós azuis
+            double yInicio = 100; // Posição inicial vertical para os nós azuis
+            double distanciaHorizontal = 200; // Distância horizontal entre os nós azuis (apenas um por linha)
+            double distanciaVertical = 200;   // Distância vertical entre as linhas de nós azuis
+
+            // Variável para controlar a linha dos nós azuis
+            int linhaAzul = 0;
+
+            double maxX = 0;  // Para controlar o tamanho máximo em X (largura)
+            double maxY = 0;  // Para controlar o tamanho máximo em Y (altura)
+
+            // Para cada conjunto de vizinhos, desenhar os nós e conexões
             for (Map.Entry<Integer, Set<Integer>> entry : grafo.getAdjacencias().entrySet()) {
-                grafoTexto.append("Propriedade ").append(entry.getKey())
-                        .append(" é vizinha de: ").append(entry.getValue())
-                        .append("\n");
+                Integer idPropriedade = entry.getKey();
+                Set<Integer> vizinhos = entry.getValue();
+
+                // Ajustar a posição do nó azul em sua linha
+                double xPos = xInicio;  // Um único nó azul por linha, então a posição horizontal é fixa
+                double yPos = yInicio + linhaAzul * distanciaVertical; // Cada linha vai para baixo
+
+                // Criar um círculo para o nó azul (propriedade)
+                Circle circulo = new Circle(20);
+                circulo.setFill(Color.BLUE);
+                circulo.setStroke(Color.BLACK);
+                circulo.setCenterX(xPos);
+                circulo.setCenterY(yPos);
+
+                // Adicionar o texto com o identificador da propriedade
+                Text texto = new Text(String.valueOf(idPropriedade));
+                texto.setX(circulo.getCenterX() - 10);
+                texto.setY(circulo.getCenterY() + 5);
+
+                // Adicionar o nó azul (propriedade) ao painel
+                pane.getChildren().addAll(circulo, texto);
+                nos.put(idPropriedade, circulo);
+
+                // Desenhar as conexões (linhas) para os vizinhos (nós verdes)
+                int offset = 1; // Para controlar a disposição dos vizinhos ao longo de uma linha
+                for (Integer vizinhoId : vizinhos) {
+                    // Criar um círculo para o vizinho (nó verde)
+                    Circle circuloVizinho = new Circle(20);
+                    circuloVizinho.setFill(Color.GREEN);
+                    circuloVizinho.setStroke(Color.BLACK);
+
+                    // Posicionar o vizinho ligeiramente abaixo do nó azul
+                    circuloVizinho.setCenterX(xPos + offset * distanciaHorizontal); // Ajuste horizontal dos vizinhos
+                    circuloVizinho.setCenterY(yPos + distanciaVertical);            // Ajuste vertical dos vizinhos
+
+                    // Adicionar o texto para o vizinho
+                    Text textoVizinho = new Text(String.valueOf(vizinhoId));
+                    textoVizinho.setX(circuloVizinho.getCenterX() - 10);
+                    textoVizinho.setY(circuloVizinho.getCenterY() + 5);
+
+                    // Adicionar o vizinho ao painel
+                    pane.getChildren().addAll(circuloVizinho, textoVizinho);
+                    nos.put(vizinhoId, circuloVizinho);
+
+                    // Desenhar a linha conectando o nó azul ao vizinho (nó verde)
+                    Line linha = new Line();
+                    linha.setStartX(circulo.getCenterX());
+                    linha.setStartY(circulo.getCenterY());
+                    linha.setEndX(circuloVizinho.getCenterX());
+                    linha.setEndY(circuloVizinho.getCenterY());
+                    linha.setStroke(Color.BLACK);
+
+                    // Adicionar a linha ao painel
+                    pane.getChildren().add(linha);
+
+                    offset++; // Incrementa para posicionar o próximo vizinho em uma posição à direita
+                }
+                // Atualizar os limites máximos do painel
+                maxX = Math.max(maxX, xPos + distanciaHorizontal * offset);
+                maxY = Math.max(maxY, yPos + distanciaVertical);
+                linhaAzul++; // Incrementar para a próxima linha de nós azuis
             }
+            // Ajustar o tamanho preferido do painel com base no conteúdo
+            pane.setMinSize(maxX + 100, maxY + 100);  // Ajuste automático baseado no conteúdo
+            pane.setPrefSize(maxX + 100, maxY + 100);  // Adicionar margens para o conteúdo
 
-            // Criar o TextArea para exibir o grafo
-            TextArea textArea = new TextArea();
-            textArea.setText(grafoTexto.toString());
-            textArea.setEditable(false);
-            textArea.setPrefHeight(400);
-            textArea.setPrefWidth(600);
+            // Criar um ScrollPane para permitir o scroll dentro do painel
+            ScrollPane scrollPane = new ScrollPane(pane);
+            scrollPane.setFitToHeight(true); // Ajustar automaticamente à altura
+            scrollPane.setFitToWidth(true);  // Ajustar automaticamente à largura
+            scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS); // Sempre mostrar barra de rolagem vertical
 
-            // Adicionar o TextArea ao layout
-            container.getChildren().clear(); // Limpa o conteúdo anterior
-            container.getChildren().add(textArea);
+            // Criar uma nova janela (Stage) para exibir o conteúdo
+            Stage novaJanela = new Stage();
+            novaJanela.setTitle("Exibição do Grafo");
+            Scene novaCena = new Scene(scrollPane, 800, 600);
+            novaJanela.setScene(novaCena);
+
+            // Mostrar a nova janela
+            novaJanela.show();
 
         } catch (Exception e) {
-            showAlert("Erro", "Não foi possível carregar os dados: " + e.getMessage());
+            showAlert("Erro", "Não foi possível carregar os dados ou desenhar o grafo: " + e.getMessage());
+            e.printStackTrace();
         }
     }
+
+
 
 
     @FXML
     protected void onExercicio3Click() {
         try {
-            // Caminho do arquivo CSV
-            String caminhoCsv = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle-1.1.csv";
+            //String caminhoCsv = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle-1.1.csv";
 
-            // Carregar os dados do CSV
-            List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(caminhoCsv);
+            //List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(caminhoCsv);
+            List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(arquivoCSV.getAbsolutePath());
 
-            // Solicitar ao utilizador o tipo de área geográfica
             TextInputDialog tipoDialog = new TextInputDialog();
             tipoDialog.setTitle("Seleção de Tipo de Área");
             tipoDialog.setHeaderText("Digite o tipo de área geográfica (freguesia, municipio, ilha):");
@@ -105,14 +249,11 @@ public class HelloController {
             }
 
             String tipoArea = tipoAreaOpt.get().trim().toLowerCase();
-
-            // Verificar se o tipo de área é válido
             if (!List.of("freguesia", "municipio", "ilha").contains(tipoArea)) {
                 showAlert("Erro", "Tipo de área inválido. Use: freguesia, municipio ou ilha.");
                 return;
             }
 
-            // Obter e exibir as áreas disponíveis
             List<String> areasDisponiveis = CalculadoraPropriedades.obterAreasDisponiveis(propriedades, tipoArea);
             if (areasDisponiveis.isEmpty()) {
                 showAlert("Erro", "Não há áreas disponíveis para o tipo especificado: " + tipoArea);
@@ -124,7 +265,6 @@ public class HelloController {
                 areasTexto.append("- ").append(area).append("\n");
             }
 
-            // Mostrar as áreas disponíveis ao utilizador
             TextArea areasDisponiveisArea = new TextArea(areasTexto.toString());
             areasDisponiveisArea.setEditable(false);
             Alert areasDialog = new Alert(Alert.AlertType.INFORMATION);
@@ -132,8 +272,6 @@ public class HelloController {
             areasDialog.setHeaderText("Selecione uma área a partir da lista abaixo:");
             areasDialog.getDialogPane().setContent(areasDisponiveisArea);
             areasDialog.showAndWait();
-
-            // Solicitar o valor da área
             TextInputDialog valorDialog = new TextInputDialog();
             valorDialog.setTitle("Seleção de Valor da Área");
             valorDialog.setHeaderText("Digite o valor da área geográfica (ex.: 'Arco da Calheta' ou 'Calheta'):");
@@ -146,11 +284,8 @@ public class HelloController {
             }
 
             String valorArea = valorAreaOpt.get().trim();
-
-            // Calcular a área média
             double areaMedia = CalculadoraPropriedades.calcularAreaMedia(propriedades, tipoArea, valorArea);
 
-            // Mostrar o resultado
             if (areaMedia == -1) {
                 showAlert("Resultado", "Nenhuma propriedade encontrada para a área especificada: " + valorArea + " (" + tipoArea + ").");
             } else {

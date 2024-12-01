@@ -1,6 +1,11 @@
 package iscteiul.ista.es20241semletigrupof;
 
 import javafx.geometry.BoundingBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
+import javafx.scene.text.Text;
+
 import java.util.*;
 
 public class Grafo {
@@ -20,7 +25,7 @@ public class Grafo {
     }
 
     // Método para calcular a bounding box de uma geometria
-    private BoundingBox calcularBoundingBox(String geometry) {
+    BoundingBox calcularBoundingBox(String geometry) {
         double minX = Double.MAX_VALUE, minY = Double.MAX_VALUE;
         double maxX = Double.MIN_VALUE, maxY = Double.MIN_VALUE;
 
@@ -83,4 +88,6 @@ public class Grafo {
             System.out.println("Propriedade " + entry.getKey() + " é vizinha de: " + entry.getValue());
         }
     }
+
+
 }

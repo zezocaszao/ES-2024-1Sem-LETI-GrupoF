@@ -6,6 +6,8 @@
 <?import javafx.scene.text.Text?>
 
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.control.Label?>
 <GridPane xmlns:fx="http://javafx.com/fxml" fx:controller="iscteiul.ista.es20241semletigrupof.HelloController"
           hgap="10" vgap="10" alignment="center">
     <padding>
@@ -13,7 +15,7 @@
     </padding>
 
     <!-- Título -->
-    <Text text="Áreas Geográficas" style="-fx-font-size: 20px;" GridPane.columnSpan="2" GridPane.halignment="center"/>
+    <Text text="Áreas Geográficas" style="-fx-font-size: 20px;" GridPane.columnSpan="2" GridPane.halignment="left"/>
 
     <!-- Botões para os exercícios -->
     <Button text="Exercício 1" onAction="#onExercicio1Click" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
@@ -22,9 +24,11 @@
     <Button text="Exercício 4" onAction="#onExercicio4Click" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
     <Button text="Exercício 5" onAction="#onExercicio5Click" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
     <Button text="Exercício 6" onAction="#onExercicio6Click" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+    <Button text="Carregar CSV" onAction="#onCarregarCSVClick" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+    <Label fx:id="nomeArquivoLabel" text="Nenhum arquivo selecionado" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
 
-    <!-- Área dinâmica -->
-    <VBox fx:id="container" GridPane.rowIndex="4" GridPane.columnSpan="2" alignment="top_center" spacing="10">
-        <!-- O conteúdo dinâmico será adicionado aqui -->
-    </VBox>
+
+
+
+
 </GridPane>
