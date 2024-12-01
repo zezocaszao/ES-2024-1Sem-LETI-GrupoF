@@ -3,6 +3,7 @@ package iscteiul.ista.es20241semletigrupof;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class main {
@@ -13,8 +14,8 @@ public class main {
 
 
         HelloApplication.main(args);
-
-       /* try {
+/*
+        try {
             // Caminho do arquivo CSV
             String caminhoCsv = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle-1.1.csv";
 
@@ -33,5 +34,6 @@ public class main {
             e.printStackTrace();
         }
     */
+
     }
 }

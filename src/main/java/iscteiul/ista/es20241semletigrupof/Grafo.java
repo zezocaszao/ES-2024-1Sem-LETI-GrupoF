@@ -32,7 +32,6 @@ public class Grafo {
         if (geometry == null || geometry.isEmpty() || geometry.contains("EMPTY") || !geometry.startsWith("MULTIPOLYGON")) {
             return new BoundingBox(0, 0, 0, 0); // Retorna uma bounding box nula
         }
-
         try {
             String coordenadas = geometry.replace("MULTIPOLYGON", "")
                     .replace("(", "")

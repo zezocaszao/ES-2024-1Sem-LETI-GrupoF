@@ -3,7 +3,7 @@ package iscteiul.ista.es20241semletigrupof;
 import java.util.*;
 
 public class SugestaoTrocas { // falta fazer a 4(area media) e a 5(para ter os vizinhos)
-
+/*
     // Método para gerar sugestões de troca
     public static List<TrocaPropriedades> sugerirTrocas(List<DadosPropriedades> propriedades) {
         List<TrocaPropriedades> trocasSugeridas = new ArrayList<>();
@@ -31,8 +31,9 @@ public class SugestaoTrocas { // falta fazer a 4(area media) e a 5(para ter os v
                     for (DadosPropriedades prop1 : propriedades1) {
                         for (DadosPropriedades prop2 : propriedades2) {
                             // Calcular a melhoria na área média
-                            double areaMediaAntes1 = calcularAreaMedia(proprietario1, propriedadesPorProprietario.get(proprietario1));
-                            double areaMediaAntes2 = calcularAreaMedia(proprietario2, propriedadesPorProprietario.get(proprietario2));
+
+                            //double areaMediaAntes1 = calcularAreaMedia(proprietario1, propriedadesPorProprietario.get(proprietario1));
+                           // double areaMediaAntes2 = calcularAreaMedia(proprietario2, propriedadesPorProprietario.get(proprietario2));
 
 
                             // Criar cópias das listas de propriedades para cada proprietário
@@ -65,7 +66,7 @@ public class SugestaoTrocas { // falta fazer a 4(area media) e a 5(para ter os v
                 }
             }
         }
-
+*/
         // Passo 3: Ordenar as sugestões por melhoria e potencialidade
         /* trocasSugeridas.sort((t1, t2) -> {
             // Priorizar pela maior melhoria
@@ -77,20 +78,9 @@ public class SugestaoTrocas { // falta fazer a 4(area media) e a 5(para ter os v
             }
             return comparacaoMelhoria;
         });
-        */
-        return trocasSugeridas;
-    }
 
-    // Método para calcular a área média de um proprietário
-    private static double calcularAreaMedia(String proprietarioId, List<DadosPropriedades> propriedadesPorProprietario) {
+        return trocasSugeridas;*/
+   // }
 
-        if (propriedadesPorProprietario == null || propriedadesPorProprietario.isEmpty()) {
-            return 0;
-        }
-        double somaAreas = 0;
-        for (DadosPropriedades prop : propriedadesPorProprietario) {
-            somaAreas += prop.getShapeArea();
-        }
-        return somaAreas / propriedadesPorProprietario.size();
-    }
+
 }
