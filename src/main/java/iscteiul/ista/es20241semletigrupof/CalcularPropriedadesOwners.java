@@ -1,12 +1,11 @@
 package iscteiul.ista.es20241semletigrupof;
 
-import javafx.geometry.BoundingBox;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class CalcularPropriedadesOwners {
 
+    // Método para obter as áreas disponíveis
     public static List<String> obterAreasDisponiveis(List<DadosPropriedades> propriedades, String tipoArea) {
         return propriedades.stream()
                 .map(propriedade -> {
@@ -26,89 +25,79 @@ public class CalcularPropriedadesOwners {
                 .collect(Collectors.toList());
     }
 
-    // Método para agrupar propriedades por dono e área
-    public static Map<String, List<DadosPropriedades>> agruparPropriedadesPorDono(List<DadosPropriedades> propriedades) {
+    // Método para obter os donos disponíveis em uma área específica
+    public static List<String> obterDonosPorArea(List<DadosPropriedades> propriedades, String tipoArea, String areaEscolhida) {
         return propriedades.stream()
-                .collect(Collectors.groupingBy(DadosPropriedades::getOwner));
-    }
-
-    // Método para verificar vizinhança
-    public static boolean saoVizinhas(DadosPropriedades p1, DadosPropriedades p2, Grafo grafo) {
-        // Criar as BoundingBoxes para cada propriedade
-        BoundingBox bbox1 = grafo.calcularBoundingBox(p1.getGeometry());
-        BoundingBox bbox2 = grafo.calcularBoundingBox(p2.getGeometry());
-
-        // Verifica se as BoundingBoxes se sobrepõem, indicando que as propriedades são vizinhas
-        return bbox1.intersects(bbox2);
-    }
-
-    // Método para calcular a área total de propriedades vizinhas pertencentes ao mesmo dono
-    public static double calcularAreaTotal(List<DadosPropriedades> propriedades, Grafo grafo) {
-        // Agrupar propriedades por dono
-        Map<String, List<DadosPropriedades>> propriedadesPorDono = agruparPropriedadesPorDono(propriedades);
-
-        double areaTotal = 0;
-
-        for (Map.Entry<String, List<DadosPropriedades>> entry : propriedadesPorDono.entrySet()) {
-            List<DadosPropriedades> propriedadesDono = entry.getValue();
-            Set<DadosPropriedades> propriedadesCombinadas = new HashSet<>();
-
-            for (DadosPropriedades p1 : propriedadesDono) {
-                // Verifica todas as propriedades adjacentes e agrupa as áreas
-                for (DadosPropriedades p2 : propriedadesDono) {
-                    if (p1 != p2 && saoVizinhas(p1, p2, grafo)) {
-                        // Combina as áreas das propriedades vizinhas
-                        propriedadesCombinadas.add(p1);
-                        propriedadesCombinadas.add(p2);
+                .filter(propriedade -> {
+                    switch (tipoArea.toLowerCase()) {
+                        case "freguesia":
+                            return propriedade.getFreguesia().equals(areaEscolhida);
+                        case "municipio":
+                            return propriedade.getMunicipio().equals(areaEscolhida);
+                        case "ilha":
+                            return propriedade.getIlha().equals(areaEscolhida);
+                        default:
+                            return false;
                     }
-                }
-            }
-
-            // Soma as áreas das propriedades vizinhas (todas as propriedades combinadas)
-            areaTotal += propriedadesCombinadas.stream()
-                    .mapToDouble(DadosPropriedades::getShapeArea)
-                    .sum();
-        }
-
-        return areaTotal;
+                })
+                .map(DadosPropriedades::getOwner)
+                .distinct() // Remover duplicatas
+                .sorted()   // Ordenar alfabeticamente
+                .collect(Collectors.toList());
     }
 
-    // Método para calcular a área média, considerando as áreas combinadas
-    public static double calcularAreaMedia(List<DadosPropriedades> propriedades, Grafo grafo) {
-        double areaTotal = calcularAreaTotal(propriedades, grafo);
-        int quantidadePropriedades = propriedades.size();
-        return areaTotal / quantidadePropriedades;
+    // Método para calcular a área média das propriedades de um dono dentro de uma área específica
+    public static double calcularAreaMediaPorDono(List<DadosPropriedades> propriedades, String tipoArea, String areaEscolhida, String donoEscolhido) {
+        // Filtrar as propriedades por área e dono
+        List<DadosPropriedades> propriedadesFiltradas = propriedades.stream()
+                .filter(propriedade -> {
+                    switch (tipoArea.toLowerCase()) {
+                        case "freguesia":
+                            return propriedade.getFreguesia().equals(areaEscolhida);
+                        case "municipio":
+                            return propriedade.getMunicipio().equals(areaEscolhida);
+                        case "ilha":
+                            return propriedade.getIlha().equals(areaEscolhida);
+                        default:
+                            return false;
+                    }
+                })
+                .filter(propriedade -> propriedade.getOwner().equals(donoEscolhido)) // Filtra pelo dono escolhido
+                .collect(Collectors.toList());
+
+        // Calcular a média da área
+        double areaTotal = propriedadesFiltradas.stream()
+                .mapToDouble(DadosPropriedades::getShapeArea)
+                .sum();
+        return areaTotal / propriedadesFiltradas.size(); // Média das áreas
     }
 
-    // Método para exibir a área média por área (freguesia, municipio, ilha)
-    public static Map<String, Double> calcularAreaMediaPorArea(List<DadosPropriedades> propriedades, String tipoArea, Grafo grafo) {
-        Map<String, Double> areaMediaPorArea = new HashMap<>();
+    // Exemplo de uso para escolher a área, o dono e calcular a média das áreas
+    public static void exibirAreaMediaPorDono(List<DadosPropriedades> propriedades) {
+        Scanner scanner = new Scanner(System.in);
 
+        // Escolher o tipo de área
+        System.out.println("Escolha o tipo de área (freguesia, municipio, ilha): ");
+        String tipoArea = scanner.nextLine();
+
+        // Obter as áreas disponíveis
         List<String> areasDisponiveis = obterAreasDisponiveis(propriedades, tipoArea);
+        System.out.println("Áreas disponíveis: ");
+        areasDisponiveis.forEach(System.out::println);
 
-        for (String area : areasDisponiveis) {
-            // Filtrar propriedades por área
-            List<DadosPropriedades> propriedadesPorArea = propriedades.stream()
-                    .filter(propriedade -> {
-                        switch (tipoArea.toLowerCase()) {
-                            case "freguesia":
-                                return propriedade.getFreguesia().equals(area);
-                            case "municipio":
-                                return propriedade.getMunicipio().equals(area);
-                            case "ilha":
-                                return propriedade.getIlha().equals(area);
-                            default:
-                                return false;
-                        }
-                    })
-                    .collect(Collectors.toList());
+        System.out.println("Escolha uma área: ");
+        String areaEscolhida = scanner.nextLine();
 
-            // Calcular a área média para a área filtrada
-            double areaMedia = calcularAreaMedia(propriedadesPorArea, grafo); // Passando o grafo aqui
-            areaMediaPorArea.put(area, areaMedia);
-        }
+        // Obter os donos disponíveis na área escolhida
+        List<String> donosDisponiveis = obterDonosPorArea(propriedades, tipoArea, areaEscolhida);
+        System.out.println("Donos disponíveis: ");
+        donosDisponiveis.forEach(System.out::println);
 
-        return areaMediaPorArea;
+        System.out.println("Escolha um dono: ");
+        String donoEscolhido = scanner.nextLine();
+
+        // Calcular a área média do dono na área escolhida
+        double areaMedia = calcularAreaMediaPorDono(propriedades, tipoArea, areaEscolhida, donoEscolhido);
+        System.out.println("A área média das propriedades do dono " + donoEscolhido + " na área " + areaEscolhida + " é: " + areaMedia);
     }
-
 }

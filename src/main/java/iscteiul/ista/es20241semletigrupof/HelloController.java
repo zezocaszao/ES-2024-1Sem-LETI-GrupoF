@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class HelloController {
 
@@ -305,10 +306,10 @@ public class HelloController {
                 return;
             }
 
-            // Carregar as propriedades do arquivo CSV
+            // Carregar as propriedades a partir do arquivo CSV
             List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(arquivoCSV.getAbsolutePath());
 
-            // Pedir ao usuário para inserir o tipo de área
+            // Exibir diálogo para o tipo de área
             TextInputDialog tipoDialog = new TextInputDialog();
             tipoDialog.setTitle("Seleção de Tipo de Área");
             tipoDialog.setHeaderText("Digite o tipo de área geográfica (freguesia, municipio, ilha):");
@@ -326,32 +327,70 @@ public class HelloController {
                 return;
             }
 
-            // Criar o grafo para cálculo da área
-            Grafo grafo = new Grafo();  // Inicializando o grafo (ou obtendo de algum lugar, se necessário)
+            // Obter as áreas disponíveis
+            List<String> areasDisponiveis = CalcularPropriedadesOwners.obterAreasDisponiveis(propriedades, tipoArea);
+            if (areasDisponiveis.isEmpty()) {
+                showAlert("Erro", "Não há áreas disponíveis para o tipo especificado: " + tipoArea);
+                return;
+            }
 
-            // Calcular a área média por área
-            Map<String, Double> areaMediaPorArea = CalcularPropriedadesOwners.calcularAreaMediaPorArea(propriedades, tipoArea, grafo);
+            // Exibir lista de áreas para o utilizador escolher
+            ChoiceDialog<String> areaDialog = new ChoiceDialog<>(areasDisponiveis.get(0), areasDisponiveis);
+            areaDialog.setTitle("Escolha a Área");
+            areaDialog.setHeaderText("Escolha uma área de " + tipoArea);
+            areaDialog.setContentText("Área:");
 
-            // Exibir os resultados
-            StringBuilder areaTexto = new StringBuilder("Área Média por Área:\n");
-            areaMediaPorArea.forEach((area, areaMedia) -> {
-                areaTexto.append(area).append(": ").append(areaMedia).append(" m²\n");
-            });
+            Optional<String> areaEscolhidaOpt = areaDialog.showAndWait();
+            if (!areaEscolhidaOpt.isPresent()) {
+                showAlert("Erro", "Nenhuma área foi selecionada.");
+                return;
+            }
 
-            // Criar um TextArea para exibir as áreas médias calculadas
-            TextArea areaArea = new TextArea(areaTexto.toString());
-            areaArea.setEditable(false);
-            Alert areaDialog = new Alert(Alert.AlertType.INFORMATION);
-            areaDialog.setTitle("Áreas Médias por Tipo de Área");
-            areaDialog.setHeaderText("Resultados:");
-            areaDialog.getDialogPane().setContent(areaArea);
-            areaDialog.showAndWait();
+            String areaEscolhida = areaEscolhidaOpt.get();
+
+            // Obter os donos disponíveis na área escolhida e ordená-los
+            List<String> donosDisponiveis = CalcularPropriedadesOwners.obterDonosPorArea(propriedades, tipoArea, areaEscolhida);
+            if (donosDisponiveis.isEmpty()) {
+                showAlert("Erro", "Não há donos disponíveis na área " + areaEscolhida);
+                return;
+            }
+
+            // Ordenar os donos alfabeticamente
+            donosDisponiveis = donosDisponiveis.stream()
+                    .sorted()
+                    .collect(Collectors.toList());
+
+            // Exibir lista de donos para o utilizador escolher
+            ChoiceDialog<String> donoDialog = new ChoiceDialog<>(donosDisponiveis.get(0), donosDisponiveis);
+            donoDialog.setTitle("Escolha o Dono");
+            donoDialog.setHeaderText("Escolha o dono da área " + areaEscolhida);
+            donoDialog.setContentText("Dono:");
+
+            Optional<String> donoEscolhidoOpt = donoDialog.showAndWait();
+            if (!donoEscolhidoOpt.isPresent()) {
+                showAlert("Erro", "Nenhum dono foi selecionado.");
+                return;
+            }
+
+            String donoEscolhido = donoEscolhidoOpt.get();
+
+            // Calcular a área média das propriedades do dono na área escolhida
+            double areaMedia = CalcularPropriedadesOwners.calcularAreaMediaPorDono(propriedades, tipoArea, areaEscolhida, donoEscolhido);
+
+            // Exibir o resultado da área média
+            if (areaMedia == -1) {
+                showAlert("Resultado", "Nenhuma propriedade encontrada para o dono " + donoEscolhido + " na área " + areaEscolhida + ".");
+            } else {
+                showAlert("Resultado", String.format("A área média das propriedades do dono %s na área %s é: %.2f", donoEscolhido, areaEscolhida, areaMedia));
+            }
 
         } catch (Exception e) {
-            showAlert("Erro", "Não foi possível calcular a área média por área: " + e.getMessage());
+            showAlert("Erro", "Ocorreu um erro ao calcular a área média: " + e.getMessage());
             e.printStackTrace();
         }
     }
+
+
 
 
     @FXML
@@ -361,7 +400,7 @@ public class HelloController {
 
     @FXML
     protected void onExercicio6Click() {
-/*
+
         try {
             // Verifica se um arquivo CSV foi carregado
             if (arquivoCSV == null) {
@@ -407,7 +446,7 @@ public class HelloController {
         } catch (Exception e) {
             showAlert("Erro", "Não foi possível gerar as sugestões de troca: " + e.getMessage());
             e.printStackTrace();
-        }*/
+        }
     }
 
     private void showAlert(String title, String content) {
