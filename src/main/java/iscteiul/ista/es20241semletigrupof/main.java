@@ -20,9 +20,12 @@ public class main {
             // Passo 1: Carregar dados do CSV
             List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(caminhoArquivo);
 
+            // Exibir propriedades carregadas
+            System.out.println("Propriedades carregadas:");
+            propriedades.forEach(System.out::println);
+
             // Passo 2: Construir o grafo de propriedades
             Grafo grafoPropriedades = new Grafo();
-
             for (int i = 0; i < propriedades.size(); i++) {
                 DadosPropriedades prop1 = propriedades.get(i);
                 for (int j = i + 1; j < propriedades.size(); j++) {
@@ -32,7 +35,6 @@ public class main {
                     if (grafoPropriedades.calcularBoundingBox(prop1.getGeometry())
                             .intersects(grafoPropriedades.calcularBoundingBox(prop2.getGeometry()))) {
                         grafoPropriedades.adicionarVizinho(prop1.getObjectId(), prop2.getObjectId());
-                        System.out.println("Proprietário " + prop1.getOwner() + " e Proprietário" + prop2.getOwner() + " são vizinhas.");
                     }
                 }
             }
@@ -50,13 +52,19 @@ public class main {
                 mapaPropriedadeParaProprietario.put(propriedade.getObjectId(), nomeParaIdProprietario.get(nomeProprietario));
             }
 
+            // Exibir mapeamento de propriedades para IDs de proprietários
+            System.out.println("\nMapeamento de Propriedades para IDs de Proprietários:");
+            mapaPropriedadeParaProprietario.forEach((propriedade, idProprietario) ->
+                    System.out.println("Propriedade " + propriedade + " pertence ao proprietário com ID " + idProprietario)
+            );
+
             // Passo 4: Construir o grafo de proprietários
             GrafoProprietarios grafoProprietarios = new GrafoProprietarios();
             grafoProprietarios.construirGrafo(grafoPropriedades, mapaPropriedadeParaProprietario);
 
-            // Passo 5: Exibir os vizinhos de cada proprietário
-            System.out.println("\nVizinhos dos Proprietários:");
-            grafoProprietarios.exibirGrafo(); // Usamos diretamente o método existente
+            // Passo 5: Exibir o grafo de proprietários
+            System.out.println("\nGrafo de Proprietários:");
+            grafoProprietarios.exibirGrafo();
         } catch (Exception e) {
             System.err.println("Erro ao processar o arquivo: " + e.getMessage());
         }
