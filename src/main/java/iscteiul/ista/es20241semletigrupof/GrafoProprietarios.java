@@ -19,6 +19,9 @@ public class GrafoProprietarios {
     public Set<Integer> getVizinhos(int idProprietario) {
         return grafoProprietarios.getOrDefault(idProprietario, new HashSet<>());
     }
+    public Map<Integer, Set<Integer>> getGrafoProprietarios() {
+        return grafoProprietarios;
+    }
 
     // Construir grafo de proprietários a partir do grafo de propriedades
     public void construirGrafo(Grafo grafoPropriedades, Map<Integer, Integer> mapaPropriedadeParaProprietario) {
