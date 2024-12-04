@@ -1,25 +1,29 @@
 package iscteiul.ista.es20241semletigrupof;
 
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class HelloController {
 
@@ -34,6 +38,9 @@ public class HelloController {
     private Label nomeArquivoLabel; // Variável para o Label
 
     private File arquivoCSV; // Variável para armazenar o arquivo CSV carregado
+
+    @FXML
+    private ChoiceBox<String> tipoAreaChoiceBox;
 
     // Variáveis para armazenar a posição do mouse
     private double mouseX = 0;
@@ -301,13 +308,16 @@ public class HelloController {
     @FXML
     protected void onExercicio4Click() {
         try {
-            // Caminho do arquivo CSV
-            String caminhoCsv = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle-1.1.csv";
+            // Verifica se um arquivo CSV foi carregado
+            if (arquivoCSV == null) {
+                showAlert("Erro", "Nenhum arquivo CSV foi carregado.");
+                return;
+            }
 
-            // Carregar os dados do CSV
-            List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(caminhoCsv);
+            // Carregar as propriedades a partir do arquivo CSV
+            List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(arquivoCSV.getAbsolutePath());
 
-            // Solicitar ao utilizador o tipo de área geográfica
+            // Exibir diálogo para o tipo de área
             TextInputDialog tipoDialog = new TextInputDialog();
             tipoDialog.setTitle("Seleção de Tipo de Área");
             tipoDialog.setHeaderText("Digite o tipo de área geográfica (freguesia, municipio, ilha):");
@@ -320,123 +330,259 @@ public class HelloController {
             }
 
             String tipoArea = tipoAreaOpt.get().trim().toLowerCase();
-
-            // Verificar se o tipo de área é válido
             if (!List.of("freguesia", "municipio", "ilha").contains(tipoArea)) {
                 showAlert("Erro", "Tipo de área inválido. Use: freguesia, municipio ou ilha.");
                 return;
             }
 
-            // Obter e exibir as áreas disponíveis
-            List<String> areasDisponiveis = CalculadoraPropriedades.obterAreasDisponiveis(propriedades, tipoArea);
+            // Obter as áreas disponíveis
+            List<String> areasDisponiveis = CalcularPropriedadesOwners.obterAreasDisponiveis(propriedades, tipoArea);
             if (areasDisponiveis.isEmpty()) {
                 showAlert("Erro", "Não há áreas disponíveis para o tipo especificado: " + tipoArea);
                 return;
             }
 
-            StringBuilder areasTexto = new StringBuilder("Áreas disponíveis:\n");
-            for (String area : areasDisponiveis) {
-                areasTexto.append("- ").append(area).append("\n");
-            }
+            // Exibir lista de áreas para o utilizador escolher
+            ChoiceDialog<String> areaDialog = new ChoiceDialog<>(areasDisponiveis.get(0), areasDisponiveis);
+            areaDialog.setTitle("Escolha a Área");
+            areaDialog.setHeaderText("Escolha uma área de " + tipoArea);
+            areaDialog.setContentText("Área:");
 
-            // Mostrar as áreas disponíveis ao utilizador
-            TextArea areasDisponiveisArea = new TextArea(areasTexto.toString());
-            areasDisponiveisArea.setEditable(false);
-            Alert areasDialog = new Alert(Alert.AlertType.INFORMATION);
-            areasDialog.setTitle("Áreas Disponíveis");
-            areasDialog.setHeaderText("Selecione uma área a partir da lista abaixo:");
-            areasDialog.getDialogPane().setContent(areasDisponiveisArea);
-            areasDialog.showAndWait();
-
-            // Solicitar o valor da área
-            TextInputDialog valorDialog = new TextInputDialog();
-            valorDialog.setTitle("Seleção de Valor da Área");
-            valorDialog.setHeaderText("Digite o valor da área geográfica (ex.: 'Arco da Calheta' ou 'Calheta'):");
-            valorDialog.setContentText("Valor da área:");
-            Optional<String> valorAreaOpt = valorDialog.showAndWait();
-
-            if (!valorAreaOpt.isPresent() || valorAreaOpt.get().trim().isEmpty()) {
-                showAlert("Erro", "O valor da área é obrigatório.");
+            Optional<String> areaEscolhidaOpt = areaDialog.showAndWait();
+            if (!areaEscolhidaOpt.isPresent()) {
+                showAlert("Erro", "Nenhuma área foi selecionada.");
                 return;
             }
 
-            String valorArea = valorAreaOpt.get().trim();
+            String areaEscolhida = areaEscolhidaOpt.get();
 
-            // Construir o grafo
-            Grafo grafo = new Grafo();
-            grafo.construirGrafo(propriedades);
+            // Obter os donos disponíveis na área escolhida e ordená-los
+            List<String> donosDisponiveis = CalcularPropriedadesOwners.obterDonosPorArea(propriedades, tipoArea, areaEscolhida);
+            if (donosDisponiveis.isEmpty()) {
+                showAlert("Erro", "Não há donos disponíveis na área " + areaEscolhida);
+                return;
+            }
 
-            // Calcular a área média considerando propriedades adjacentes do mesmo proprietário
-            double areaMedia = CalcularPropiedadesOwners.averageAreaOwner(propriedades, grafo, tipoArea, valorArea);
+            // Ordenar os donos alfabeticamente
+            donosDisponiveis = donosDisponiveis.stream()
+                    .sorted()
+                    .collect(Collectors.toList());
 
-            // Mostrar o resultado
+            // Exibir lista de donos para o utilizador escolher
+            ChoiceDialog<String> donoDialog = new ChoiceDialog<>(donosDisponiveis.get(0), donosDisponiveis);
+            donoDialog.setTitle("Escolha o Dono");
+            donoDialog.setHeaderText("Escolha o dono da área " + areaEscolhida);
+            donoDialog.setContentText("Dono:");
+
+            Optional<String> donoEscolhidoOpt = donoDialog.showAndWait();
+            if (!donoEscolhidoOpt.isPresent()) {
+                showAlert("Erro", "Nenhum dono foi selecionado.");
+                return;
+            }
+
+            String donoEscolhido = donoEscolhidoOpt.get();
+
+            // Calcular a área média das propriedades do dono na área escolhida
+            double areaMedia = CalcularPropriedadesOwners.calcularAreaMediaPorDono(propriedades, tipoArea, areaEscolhida, donoEscolhido);
+
+            // Exibir o resultado da área média
             if (areaMedia == -1) {
-                showAlert("Resultado", "Nenhuma propriedade encontrada para a área especificada: " + valorArea + " (" + tipoArea + ").");
+                showAlert("Resultado", "Nenhuma propriedade encontrada para o dono " + donoEscolhido + " na área " + areaEscolhida + ".");
             } else {
-                showAlert("Resultado", String.format("A área média das propriedades em %s (%s) é: %.2f", valorArea, tipoArea, areaMedia));
+                showAlert("Resultado", String.format("A área média das propriedades do dono %s na área %s é: %.2f", donoEscolhido, areaEscolhida, areaMedia));
             }
 
         } catch (Exception e) {
-            showAlert("Erro", "Não foi possível calcular a área média: " + e.getMessage());
+            showAlert("Erro", "Ocorreu um erro ao calcular a área média: " + e.getMessage());
             e.printStackTrace();
         }
     }
+
+
 
 
     @FXML
     protected void onExercicio5Click() {
-        showAlert("Exercício 5", "Você selecionou o Exercício 5.");
-    }
-
-    @FXML
-    protected void onExercicio6Click() {
         try {
-            // Verifica se um arquivo CSV foi carregado
-            if (arquivoCSV == null) {
-                showAlert("Erro", "Nenhum arquivo CSV foi carregado.");
-                return;
-            }
-
-            // Carregar os dados do CSV
+            // Carregar as propriedades a partir do arquivo CSV
             List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(arquivoCSV.getAbsolutePath());
 
-            // Gerar sugestões de trocas
-            List<TrocaPropriedades> trocasSugeridas = SugestaoTrocas.sugerirTrocas(propriedades);
+            // Criar o grafo
+            GrafoProprietarios grafo = new GrafoProprietarios();
+            grafo.construirGrafoProprietarios(propriedades); // Construir o grafo com as vizinhanças
 
-            if (trocasSugeridas.isEmpty()) {
-                showAlert("Resultado", "Não foram encontradas sugestões de troca.");
-            } else {
-                // Criar uma área de texto para exibir as sugestões de troca
-                StringBuilder sugestoesTexto = new StringBuilder("Sugestões de Trocas:\n");
-                for (TrocaPropriedades troca : trocasSugeridas) {
-                    sugestoesTexto.append(troca.toString()).append("\n");
+            // Criar um painel para desenhar
+            Pane pane = new Pane();
+            Map<String, Circle> nos = new HashMap<>(); // Mapear os donos aos círculos criados
+
+            // Ajustar a posição dos nós
+            double xInicio = 100; // Posição inicial horizontal para os nós azuis
+            double yInicio = 100; // Posição inicial vertical para os nós azuis
+            double distanciaHorizontal = 200; // Distância horizontal entre os nós azuis
+            double distanciaVertical = 200;   // Distância vertical entre as linhas de nós azuis
+
+            // Variável para controlar a linha dos nós azuis
+            int linhaAzul = 0;
+
+            double maxX = 0;  // Para controlar o tamanho máximo em X (largura)
+            double maxY = 0;  // Para controlar o tamanho máximo em Y (altura)
+
+            // Para cada conjunto de vizinhos, desenhar os nós e conexões
+            for (Map.Entry<String, Set<String>> entry : grafo.getAdjacencias().entrySet()) {
+                String dono = entry.getKey();  // O dono é uma String
+                Set<String> vizinhos = entry.getValue();
+
+                // Ajustar a posição do nó azul em sua linha
+                double xPos = xInicio;
+                double yPos = yInicio + linhaAzul * distanciaVertical;
+
+                // Criar um círculo para o nó azul (dono da propriedade)
+                Circle circulo = new Circle(20);
+                circulo.setFill(Color.BLUE);
+                circulo.setStroke(Color.BLACK);
+                circulo.setCenterX(xPos);
+                circulo.setCenterY(yPos);
+
+                // Adicionar o texto com o nome do dono
+                Text texto = new Text(dono);
+                texto.setX(circulo.getCenterX() - 10);
+                texto.setY(circulo.getCenterY() + 5);
+
+                // Adicionar o nó azul (dono) ao painel
+                pane.getChildren().addAll(circulo, texto);
+                nos.put(dono, circulo);
+
+                // Desenhar as conexões (linhas) para os vizinhos
+                int offset = 1; // Para posicionar os vizinhos na linha
+                for (String vizinho : vizinhos) {
+                    // Criar um círculo para o vizinho (nó verde)
+                    Circle circuloVizinho = new Circle(20);
+                    circuloVizinho.setFill(Color.GREEN);
+                    circuloVizinho.setStroke(Color.BLACK);
+
+                    // Posicionar o vizinho ligeiramente abaixo do nó azul
+                    circuloVizinho.setCenterX(xPos + offset * distanciaHorizontal);
+                    circuloVizinho.setCenterY(yPos + distanciaVertical);
+
+                    // Adicionar o texto para o vizinho
+                    Text textoVizinho = new Text(vizinho);
+                    textoVizinho.setX(circuloVizinho.getCenterX() - 10);
+                    textoVizinho.setY(circuloVizinho.getCenterY() + 5);
+
+                    // Adicionar o vizinho ao painel
+                    pane.getChildren().addAll(circuloVizinho, textoVizinho);
+                    nos.put(vizinho, circuloVizinho);
+
+                    // Desenhar a linha conectando o nó azul ao vizinho (nó verde)
+                    Line linha = new Line();
+                    linha.setStartX(circulo.getCenterX());
+                    linha.setStartY(circulo.getCenterY());
+                    linha.setEndX(circuloVizinho.getCenterX());
+                    linha.setEndY(circuloVizinho.getCenterY());
+                    linha.setStroke(Color.BLACK);
+
+                    // Adicionar a linha ao painel
+                    pane.getChildren().add(linha);
+
+                    offset++; // Incrementa para posicionar o próximo vizinho
                 }
 
-                // Criar um TextArea para exibir as sugestões
-                TextArea sugestoesArea = new TextArea(sugestoesTexto.toString());
-                sugestoesArea.setEditable(false);
-                sugestoesArea.setPrefHeight(400);
-                sugestoesArea.setPrefWidth(600);
-
-                // Criar uma nova janela para exibir as sugestões
-                Stage novaJanela = new Stage();
-                novaJanela.setTitle("Exercício 6 - Sugestões de Trocas");
-
-                // Adicionar o TextArea a um Scene e exibir na nova janela
-                VBox root = new VBox(sugestoesArea);
-                root.setPadding(new Insets(10));
-                Scene scene = new Scene(root, 650, 450);
-                novaJanela.setScene(scene);
-
-                // Exibir a nova janela
-                novaJanela.show();
+                // Atualizar os limites máximos do painel
+                maxX = Math.max(maxX, xPos + distanciaHorizontal * offset);
+                maxY = Math.max(maxY, yPos + distanciaVertical);
+                linhaAzul = linhaAzul+2; // Incrementar para a próxima linha de nós azuis
             }
 
+            // Ajustar o tamanho preferido do painel com base no conteúdo
+            pane.setMinSize(maxX + 100, maxY + 100);
+            pane.setPrefSize(maxX + 100, maxY + 100);
+
+            // Criar um ScrollPane para permitir o scroll dentro do painel
+            ScrollPane scrollPane = new ScrollPane(pane);
+            scrollPane.setFitToHeight(true);
+            scrollPane.setFitToWidth(true);
+            scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+
+            // Criar uma nova janela (Stage) para exibir o conteúdo
+            Stage novaJanela = new Stage();
+            novaJanela.setTitle("Exibição do Grafo de Proprietários");
+            Scene novaCena = new Scene(scrollPane, 800, 600);
+            novaJanela.setScene(novaCena);
+
+            // Mostrar a nova janela
+            novaJanela.show();
+
         } catch (Exception e) {
-            showAlert("Erro", "Não foi possível gerar as sugestões de troca: " + e.getMessage());
+            showAlert("Erro", "Não foi possível carregar os dados ou desenhar o grafo: " + e.getMessage());
             e.printStackTrace();
         }
     }
+
+    @FXML
+    public void onExercicio6Click() {
+
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setTitle("Exercício 6 - Sugestões de Trocas");
+
+        VBox layout = new VBox(10);
+        layout.setPadding(new Insets(10));
+
+        Label tipoAreaLabel = new Label("Selecione o tipo de área:");
+        ChoiceBox<String> tipoAreaChoiceBox = new ChoiceBox<>(FXCollections.observableArrayList("Freguesia", "Município", "Ilha"));
+
+        Button gerarSugestoesButton = new Button("Gerar Sugestões");
+        TableView<TrocaPropriedades> tabelaSugestoes = new TableView<>();
+
+        TableColumn<TrocaPropriedades, String> prop1Column = new TableColumn<>("Propriedade 1");
+        prop1Column.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getProp1().toString()));
+
+        TableColumn<TrocaPropriedades, String> prop2Column = new TableColumn<>("Propriedade 2");
+        prop2Column.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getProp2().toString()));
+
+        TableColumn<TrocaPropriedades, Double> melhoria1Column = new TableColumn<>("Melhoria Proprietário 1");
+        melhoria1Column.setCellValueFactory(data -> new SimpleDoubleProperty(data.getValue().getMelhoriaProprietario1()).asObject());
+
+        TableColumn<TrocaPropriedades, Double> melhoria2Column = new TableColumn<>("Melhoria Proprietário 2");
+        melhoria2Column.setCellValueFactory(data -> new SimpleDoubleProperty(data.getValue().getMelhoriaProprietario2()).asObject());
+
+        tabelaSugestoes.getColumns().addAll(prop1Column, prop2Column, melhoria1Column, melhoria2Column);
+
+        gerarSugestoesButton.setOnAction(e -> {
+            String tipoAreaSelecionado = tipoAreaChoiceBox.getValue();
+            if (tipoAreaSelecionado == null) {
+                Alert alert = new Alert(Alert.AlertType.WARNING, "Por favor, selecione um tipo de área.", ButtonType.OK);
+                alert.showAndWait();
+                return;
+            }
+
+            try {
+                // Substitua "caminho/do/arquivo.csv" pelo caminho real do arquivo CSV
+                String caminhoArquivo = arquivoCSV.getAbsolutePath();
+
+                List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(caminhoArquivo);
+
+                // Gerar as sugestões
+                List<TrocaPropriedades> trocasSugeridas = SugestaoTrocas.sugerirTrocas(propriedades);
+
+                // Atualizar a tabela com as sugestões
+                tabelaSugestoes.getItems().setAll(trocasSugeridas);
+            } catch (Exception ex) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Erro ao carregar o arquivo CSV: " + ex.getMessage(), ButtonType.OK);
+                alert.showAndWait();
+            }
+        });
+
+        layout.getChildren().addAll(tipoAreaLabel, tipoAreaChoiceBox, gerarSugestoesButton, tabelaSugestoes);
+
+        Scene scene = new Scene(layout, 600, 400);
+        stage.setScene(scene);
+        stage.showAndWait();
+
+
+    }
+
+
 
     private void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -444,5 +590,7 @@ public class HelloController {
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
+
+
     }
 }
