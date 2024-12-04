@@ -3,6 +3,7 @@ package iscteiul.ista.es20241semletigrupof;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -10,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -519,67 +521,97 @@ public class HelloController {
     }
 
     @FXML
-    public void onExercicio6Click() {
-/*
-        Stage stage = new Stage();
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setTitle("Exercício 6 - Sugestões de Trocas");
+    public void onExercicio6Click(ActionEvent event) throws Exception {
+        Stage newStage = new Stage();
+        newStage.setTitle("Sugestão de Trocas");
 
-        VBox layout = new VBox(10);
-        layout.setPadding(new Insets(10));
+        // Carregar as propriedades do CSV
+        List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(arquivoCSV.getAbsolutePath());
 
-        Label tipoAreaLabel = new Label("Selecione o tipo de área:");
-        ChoiceBox<String> tipoAreaChoiceBox = new ChoiceBox<>(FXCollections.observableArrayList("Freguesia", "Município", "Ilha"));
+        // Dialog para selecionar o tipo de área geográfica
+        TextInputDialog tipoDialog = new TextInputDialog();
+        tipoDialog.setTitle("Seleção de Tipo de Área");
+        tipoDialog.setHeaderText("Digite o tipo de área geográfica (freguesia, municipio, ilha):");
+        tipoDialog.setContentText("Tipo de área:");
+        Optional<String> tipoAreaOpt = tipoDialog.showAndWait();
 
-        Button gerarSugestoesButton = new Button("Gerar Sugestões");
-        TableView<TrocaPropriedades> tabelaSugestoes = new TableView<>();
+        if (!tipoAreaOpt.isPresent() || tipoAreaOpt.get().trim().isEmpty()) {
+            showAlert("Erro", "O tipo de área geográfica é obrigatório.");
+            return;
+        }
 
-        TableColumn<TrocaPropriedades, String> prop1Column = new TableColumn<>("Propriedade 1");
-        prop1Column.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getProp1().toString()));
+        String tipoArea = tipoAreaOpt.get().trim().toLowerCase();
+        if (!List.of("freguesia", "municipio", "ilha").contains(tipoArea)) {
+            showAlert("Erro", "Tipo de área inválido. Use: freguesia, municipio ou ilha.");
+            return;
+        }
 
-        TableColumn<TrocaPropriedades, String> prop2Column = new TableColumn<>("Propriedade 2");
-        prop2Column.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getProp2().toString()));
+        // Obter as áreas disponíveis
+        List<String> areasDisponiveis = CalculadoraPropriedades.obterAreasDisponiveis(propriedades, tipoArea);
+        if (areasDisponiveis.isEmpty()) {
+            showAlert("Erro", "Não há áreas disponíveis para o tipo especificado: " + tipoArea);
+            return;
+        }
 
-        TableColumn<TrocaPropriedades, Double> melhoria1Column = new TableColumn<>("Melhoria Proprietário 1");
-        melhoria1Column.setCellValueFactory(data -> new SimpleDoubleProperty(data.getValue().getMelhoriaProprietario1()).asObject());
+        // Exibir as áreas disponíveis
+        StringBuilder areasTexto = new StringBuilder("Áreas disponíveis:\n");
+        for (String area : areasDisponiveis) {
+            areasTexto.append("- ").append(area).append("\n");
+        }
 
-        TableColumn<TrocaPropriedades, Double> melhoria2Column = new TableColumn<>("Melhoria Proprietário 2");
-        melhoria2Column.setCellValueFactory(data -> new SimpleDoubleProperty(data.getValue().getMelhoriaProprietario2()).asObject());
+        TextArea areasDisponiveisArea = new TextArea(areasTexto.toString());
+        areasDisponiveisArea.setEditable(false);
+        Alert areasDialog = new Alert(Alert.AlertType.INFORMATION);
+        areasDialog.setTitle("Áreas Disponíveis");
+        areasDialog.setHeaderText("Selecione uma área a partir da lista abaixo:");
+        areasDialog.getDialogPane().setContent(areasDisponiveisArea);
+        areasDialog.showAndWait();
 
-        tabelaSugestoes.getColumns().addAll(prop1Column, prop2Column, melhoria1Column, melhoria2Column);
+        // Dialog para escolher uma área específica
+        TextInputDialog valorDialog = new TextInputDialog();
+        valorDialog.setTitle("Seleção de Valor da Área");
+        valorDialog.setHeaderText("Digite o valor da área geográfica (ex.: 'Arco da Calheta' ou 'Calheta'):");
+        valorDialog.setContentText("Valor da área:");
+        Optional<String> valorAreaOpt = valorDialog.showAndWait();
 
-        gerarSugestoesButton.setOnAction(e -> {
-            String tipoAreaSelecionado = tipoAreaChoiceBox.getValue();
-            if (tipoAreaSelecionado == null) {
-                Alert alert = new Alert(Alert.AlertType.WARNING, "Por favor, selecione um tipo de área.", ButtonType.OK);
-                alert.showAndWait();
-                return;
+        if (!valorAreaOpt.isPresent() || valorAreaOpt.get().trim().isEmpty()) {
+            showAlert("Erro", "O valor da área é obrigatório.");
+            return;
+        }
+
+        String areaEscolhida = valorAreaOpt.get().trim();
+
+        // Criar o grafo de proprietários (aqui é necessário que você tenha a implementação do grafo)
+        GrafoProprietarios grafo = new GrafoProprietarios(); // Isso pode ser um grafo carregado de alguma forma
+        grafo.construirGrafoProprietarios(propriedades);
+
+        // Chamar o método para sugerir trocas de propriedades
+        List<TrocaPropriedades> trocas = SugestaoTrocas.sugerirTrocas(propriedades, tipoArea, areaEscolhida, grafo);
+
+        // Exibir os resultados
+        StringBuilder resultadoTexto = new StringBuilder("Sugestões de Troca:\n");
+        if (trocas.isEmpty()) {
+            resultadoTexto.append("Nenhuma troca sugerida.");
+        } else {
+            for (TrocaPropriedades troca : trocas) {
+                resultadoTexto.append("Troca entre:\n")
+                        .append("Propriedade 1: ").append(troca.getProp1().getObjectId()).append("\n")
+                        .append("Propriedade 2: ").append(troca.getProp2().getObjectId()).append("\n")
+                        .append("Melhoria Proprietário 1: ").append(troca.getMelhoriaProprietario1()).append("\n")
+                        .append("Melhoria Proprietário 2: ").append(troca.getMelhoriaProprietario2()).append("\n")
+                        .append("Potencialidade de troca: ").append(troca.getPotencialidadeTroca()).append("\n\n");
             }
+        }
 
-            try {
-                // Substitua "caminho/do/arquivo.csv" pelo caminho real do arquivo CSV
-                String caminhoArquivo = arquivoCSV.getAbsolutePath();
+        // Mostrar as sugestões de troca
+        TextArea resultadoArea = new TextArea(resultadoTexto.toString());
+        resultadoArea.setEditable(false);
+        StackPane newRoot = new StackPane();
+        newRoot.getChildren().add(resultadoArea);
 
-                List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(caminhoArquivo);
-
-                // Gerar as sugestões
-                List<TrocaPropriedades> trocasSugeridas = SugestaoTrocas.sugerirTrocas(propriedades);
-
-                // Atualizar a tabela com as sugestões
-                tabelaSugestoes.getItems().setAll(trocasSugeridas);
-            } catch (Exception ex) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Erro ao carregar o arquivo CSV: " + ex.getMessage(), ButtonType.OK);
-                alert.showAndWait();
-            }
-        });
-
-        layout.getChildren().addAll(tipoAreaLabel, tipoAreaChoiceBox, gerarSugestoesButton, tabelaSugestoes);
-
-        Scene scene = new Scene(layout, 600, 400);
-        stage.setScene(scene);
-        stage.showAndWait();
-*/
-
+        Scene newScene = new Scene(newRoot, 600, 400);
+        newStage.setScene(newScene);
+        newStage.show();
     }
 
 
