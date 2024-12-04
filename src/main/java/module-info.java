@@ -11,7 +11,7 @@ module iscteiul.ista.es20241semletigrupof {
     requires eu.hansolo.tilesfx;
     requires com.opencsv;
     requires java.sql;
-
+    requires java.desktop;
 
 
     opens iscteiul.ista.es20241semletigrupof to javafx.fxml;

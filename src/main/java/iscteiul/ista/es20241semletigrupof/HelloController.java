@@ -220,7 +220,7 @@ public class HelloController {
 
             // Criar uma nova janela (Stage) para exibir o conteúdo
             Stage novaJanela = new Stage();
-            novaJanela.setTitle("Exibição do Grafo");
+            novaJanela.setTitle("Exibição do GrafoProprietarios");
             Scene novaCena = new Scene(scrollPane, 800, 600);
             novaJanela.setScene(novaCena);
 
