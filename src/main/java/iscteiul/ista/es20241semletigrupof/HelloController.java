@@ -520,7 +520,7 @@ public class HelloController {
 
     @FXML
     public void onExercicio6Click() {
-
+/*
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setTitle("Exercício 6 - Sugestões de Trocas");
@@ -578,7 +578,7 @@ public class HelloController {
         Scene scene = new Scene(layout, 600, 400);
         stage.setScene(scene);
         stage.showAndWait();
-
+*/
 
     }
 
