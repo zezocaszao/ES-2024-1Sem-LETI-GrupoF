@@ -10,10 +10,10 @@ public class main {
     public static void main(String[] args) {
         String caminhoCsv = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle-1.1.csv";
 
-      /*
+
       HelloApplication.main(args);
 
-      */
+/*
 
         try {
             // Carregar dados das propriedades usando a classe CarregarCsv
@@ -88,5 +88,6 @@ public class main {
         } catch (Exception e) {
             e.printStackTrace();
         }
+*/
     }
 }
