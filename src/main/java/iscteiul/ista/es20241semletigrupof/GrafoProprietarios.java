@@ -1,49 +1,96 @@
 package iscteiul.ista.es20241semletigrupof;
 
+import javafx.geometry.BoundingBox;
+
 import java.util.*;
 
 public class GrafoProprietarios {
-    private final Map<Integer, Set<Integer>> grafoProprietarios;
+    private final Map<String, Set<String>> adjacencias;
 
     public GrafoProprietarios() {
-        this.grafoProprietarios = new HashMap<>();
+        this.adjacencias = new HashMap<>();
     }
 
-    // Adicionar uma relação de vizinhança entre dois proprietários
-    public void adicionarVizinhos(int idProprietario1, int idProprietario2) {
-        grafoProprietarios.computeIfAbsent(idProprietario1, k -> new HashSet<>()).add(idProprietario2);
-        grafoProprietarios.computeIfAbsent(idProprietario2, k -> new HashSet<>()).add(idProprietario1);
+    // Método para adicionar uma conexão entre dois proprietários
+    public void adicionarVizinho(String owner1, String owner2) {
+        adjacencias.computeIfAbsent(owner1, k -> new HashSet<>()).add(owner2);
+        adjacencias.computeIfAbsent(owner2, k -> new HashSet<>()).add(owner1);
     }
 
-    // Obter vizinhos de um proprietário
-    public Set<Integer> getVizinhos(int idProprietario) {
-        return grafoProprietarios.getOrDefault(idProprietario, new HashSet<>());
-    }
-    public Map<Integer, Set<Integer>> getGrafoProprietarios() {
-        return grafoProprietarios;
+    public Map<String, Set<String>> getAdjacencias() {
+        return adjacencias;
     }
 
-    // Construir grafo de proprietários a partir do grafo de propriedades
-    public void construirGrafo(Grafo grafoPropriedades, Map<Integer, Integer> mapaPropriedadeParaProprietario) {
-        Map<Integer, Set<Integer>> adjacenciasPropriedades = grafoPropriedades.getAdjacencias();
+    // Método para calcular a bounding box de uma geometria
+    private BoundingBox calcularBoundingBox(String geometry) {
+        double minX = Double.MAX_VALUE, minY = Double.MAX_VALUE;
+        double maxX = Double.MIN_VALUE, maxY = Double.MIN_VALUE;
 
-        for (Map.Entry<Integer, Set<Integer>> entry : adjacenciasPropriedades.entrySet()) {
-            int propriedade1 = entry.getKey();
-            int proprietario1 = mapaPropriedadeParaProprietario.get(propriedade1);
+        if (geometry == null || geometry.isEmpty() || geometry.contains("EMPTY") || !geometry.startsWith("MULTIPOLYGON")) {
+            return new BoundingBox(0, 0, 0, 0); // Retorna uma bounding box nula
+        }
+        try {
+            String coordenadas = geometry.replace("MULTIPOLYGON", "")
+                    .replace("(", "")
+                    .replace(")", "")
+                    .trim();
 
-            for (int propriedade2 : entry.getValue()) {
-                int proprietario2 = mapaPropriedadeParaProprietario.get(propriedade2);
+            String[] pares = coordenadas.split(",");
+            for (String par : pares) {
+                String[] ponto = par.trim().split(" ");
+                if (ponto.length == 2) {
+                    double x = Double.parseDouble(ponto[0]);
+                    double y = Double.parseDouble(ponto[1]);
 
-                if (proprietario1 != proprietario2) { // Apenas adiciona vizinhos se os proprietários forem diferentes
-                    adicionarVizinhos(proprietario1, proprietario2);
+                    minX = Math.min(minX, x);
+                    minY = Math.min(minY, y);
+                    maxX = Math.max(maxX, x);
+                    maxY = Math.max(maxY, y);
+                } else {
+                    System.err.println("Par inválido ignorado: " + par);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao processar a geometria: " + e.getMessage());
+            return new BoundingBox(0, 0, 0, 0);
+        }
+
+        return new BoundingBox(minX, minY, maxX - minX, maxY - minY);
+    }
+
+    public void construirGrafoProprietarios(List<DadosPropriedades> propriedades) {
+        Map<Integer, BoundingBox> boundingBoxes = new HashMap<>();
+        Map<Integer, String> proprietarios = new HashMap<>();
+
+        for (DadosPropriedades propriedade : propriedades) {
+            BoundingBox boundingBox = calcularBoundingBox(propriedade.getGeometry());
+            boundingBoxes.put(propriedade.getObjectId(), boundingBox);
+            proprietarios.put(propriedade.getObjectId(), propriedade.getOwner());
+        }
+
+        for (Map.Entry<Integer, BoundingBox> entry1 : boundingBoxes.entrySet()) {
+            for (Map.Entry<Integer, BoundingBox> entry2 : boundingBoxes.entrySet()) {
+                if (entry1.getKey().equals(entry2.getKey())) {
+                    continue;
+                }
+                if (entry1.getValue().intersects(entry2.getValue())) {
+                    String owner1 = proprietarios.get(entry1.getKey());
+                    String owner2 = proprietarios.get(entry2.getKey());
+
+                    if (!owner1.equals(owner2)) { // Adicionar apenas se forem proprietários diferentes
+                        adicionarVizinho(owner1, owner2);
+                    }
                 }
             }
         }
     }
 
-    // Exibir o grafo de proprietários
+    public boolean saoVizinhos(String owner1, String owner2) {
+        return adjacencias.getOrDefault(owner1, new HashSet<>()).contains(owner2);
+    }
+
     public void exibirGrafo() {
-        for (Map.Entry<Integer, Set<Integer>> entry : grafoProprietarios.entrySet()) {
+        for (Map.Entry<String, Set<String>> entry : adjacencias.entrySet()) {
             System.out.println("Proprietário " + entry.getKey() + " é vizinho de: " + entry.getValue());
         }
     }

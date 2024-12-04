@@ -7,6 +7,8 @@ public class DadosPropriedades {
     @CsvBindByName(column = "OBJECTID")
     private int objectId;
 
+
+
     @CsvBindByName(column = "PAR_ID")
     private String parId;
 
