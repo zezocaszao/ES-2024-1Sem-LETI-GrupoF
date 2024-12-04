@@ -7,8 +7,6 @@ public class DadosPropriedades {
     @CsvBindByName(column = "OBJECTID")
     private int objectId;
 
-
-
     @CsvBindByName(column = "PAR_ID")
     private String parId;
 
@@ -38,6 +36,9 @@ public class DadosPropriedades {
 
     // Construtor sem argumentos (necessário para o OpenCSV)
     public DadosPropriedades() {
+    }
+
+    public DadosPropriedades(int objectId, String parId, String parNum, double shapeLength, double shapeArea, String geometry, String owner, String freguesia, String municipio, String ilha) {
     }
 
     // Getters e Setters
