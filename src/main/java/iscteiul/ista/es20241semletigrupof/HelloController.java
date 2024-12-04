@@ -403,12 +403,124 @@ public class HelloController {
 
     @FXML
     protected void onExercicio5Click() {
-        showAlert("Exercício 5", "Você selecionou o Exercício 5.");
+        try {
+            // Carregar as propriedades a partir do arquivo CSV
+            List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(arquivoCSV.getAbsolutePath());
+
+            // Criar o grafo
+            GrafoProprietarios grafo = new GrafoProprietarios();
+            grafo.construirGrafoProprietarios(propriedades); // Construir o grafo com as vizinhanças
+
+            // Criar um painel para desenhar
+            Pane pane = new Pane();
+            Map<String, Circle> nos = new HashMap<>(); // Mapear os donos aos círculos criados
+
+            // Ajustar a posição dos nós
+            double xInicio = 100; // Posição inicial horizontal para os nós azuis
+            double yInicio = 100; // Posição inicial vertical para os nós azuis
+            double distanciaHorizontal = 200; // Distância horizontal entre os nós azuis
+            double distanciaVertical = 200;   // Distância vertical entre as linhas de nós azuis
+
+            // Variável para controlar a linha dos nós azuis
+            int linhaAzul = 0;
+
+            double maxX = 0;  // Para controlar o tamanho máximo em X (largura)
+            double maxY = 0;  // Para controlar o tamanho máximo em Y (altura)
+
+            // Para cada conjunto de vizinhos, desenhar os nós e conexões
+            for (Map.Entry<String, Set<String>> entry : grafo.getAdjacencias().entrySet()) {
+                String dono = entry.getKey();  // O dono é uma String
+                Set<String> vizinhos = entry.getValue();
+
+                // Ajustar a posição do nó azul em sua linha
+                double xPos = xInicio;
+                double yPos = yInicio + linhaAzul * distanciaVertical;
+
+                // Criar um círculo para o nó azul (dono da propriedade)
+                Circle circulo = new Circle(20);
+                circulo.setFill(Color.BLUE);
+                circulo.setStroke(Color.BLACK);
+                circulo.setCenterX(xPos);
+                circulo.setCenterY(yPos);
+
+                // Adicionar o texto com o nome do dono
+                Text texto = new Text(dono);
+                texto.setX(circulo.getCenterX() - 10);
+                texto.setY(circulo.getCenterY() + 5);
+
+                // Adicionar o nó azul (dono) ao painel
+                pane.getChildren().addAll(circulo, texto);
+                nos.put(dono, circulo);
+
+                // Desenhar as conexões (linhas) para os vizinhos
+                int offset = 1; // Para posicionar os vizinhos na linha
+                for (String vizinho : vizinhos) {
+                    // Criar um círculo para o vizinho (nó verde)
+                    Circle circuloVizinho = new Circle(20);
+                    circuloVizinho.setFill(Color.GREEN);
+                    circuloVizinho.setStroke(Color.BLACK);
+
+                    // Posicionar o vizinho ligeiramente abaixo do nó azul
+                    circuloVizinho.setCenterX(xPos + offset * distanciaHorizontal);
+                    circuloVizinho.setCenterY(yPos + distanciaVertical);
+
+                    // Adicionar o texto para o vizinho
+                    Text textoVizinho = new Text(vizinho);
+                    textoVizinho.setX(circuloVizinho.getCenterX() - 10);
+                    textoVizinho.setY(circuloVizinho.getCenterY() + 5);
+
+                    // Adicionar o vizinho ao painel
+                    pane.getChildren().addAll(circuloVizinho, textoVizinho);
+                    nos.put(vizinho, circuloVizinho);
+
+                    // Desenhar a linha conectando o nó azul ao vizinho (nó verde)
+                    Line linha = new Line();
+                    linha.setStartX(circulo.getCenterX());
+                    linha.setStartY(circulo.getCenterY());
+                    linha.setEndX(circuloVizinho.getCenterX());
+                    linha.setEndY(circuloVizinho.getCenterY());
+                    linha.setStroke(Color.BLACK);
+
+                    // Adicionar a linha ao painel
+                    pane.getChildren().add(linha);
+
+                    offset++; // Incrementa para posicionar o próximo vizinho
+                }
+
+                // Atualizar os limites máximos do painel
+                maxX = Math.max(maxX, xPos + distanciaHorizontal * offset);
+                maxY = Math.max(maxY, yPos + distanciaVertical);
+                linhaAzul = linhaAzul+2; // Incrementar para a próxima linha de nós azuis
+            }
+
+            // Ajustar o tamanho preferido do painel com base no conteúdo
+            pane.setMinSize(maxX + 100, maxY + 100);
+            pane.setPrefSize(maxX + 100, maxY + 100);
+
+            // Criar um ScrollPane para permitir o scroll dentro do painel
+            ScrollPane scrollPane = new ScrollPane(pane);
+            scrollPane.setFitToHeight(true);
+            scrollPane.setFitToWidth(true);
+            scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+
+            // Criar uma nova janela (Stage) para exibir o conteúdo
+            Stage novaJanela = new Stage();
+            novaJanela.setTitle("Exibição do Grafo de Proprietários");
+            Scene novaCena = new Scene(scrollPane, 800, 600);
+            novaJanela.setScene(novaCena);
+
+            // Mostrar a nova janela
+            novaJanela.show();
+
+        } catch (Exception e) {
+            showAlert("Erro", "Não foi possível carregar os dados ou desenhar o grafo: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @FXML
     public void onExercicio6Click() {
-        /*
+
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setTitle("Exercício 6 - Sugestões de Trocas");
@@ -467,7 +579,7 @@ public class HelloController {
         stage.setScene(scene);
         stage.showAndWait();
 
-         */
+
     }
 
 
