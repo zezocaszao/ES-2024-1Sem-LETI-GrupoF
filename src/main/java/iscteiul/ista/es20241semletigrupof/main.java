@@ -1,99 +1,64 @@
 package iscteiul.ista.es20241semletigrupof;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class main {
     public static void main(String[] args) {
 
-       String caminhoCsv = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle-1.1.csv";
+      /* String caminhoCsv = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle-1.1.csv";
 
 
 
         HelloApplication.main(args);
-       /*
-        String caminhoCSV = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle-1.1.csv"; // Atualize para o caminho correto do arquivo
-        List<DadosPropriedades> propriedades;
 
-        // Ler propriedades usando a classe CarregarCsv
+  */
+        // Caminho para o arquivo CSV
+        String caminhoArquivo = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle-1.1.csv";
+
         try {
-            propriedades = CarregarCsv.carregarPropriedades(caminhoCSV);
-        } catch (Exception e) {
-            System.err.println("Erro ao carregar o arquivo CSV: " + e.getMessage());
-            return;
-        }
+            // Passo 1: Carregar dados do CSV
+            List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(caminhoArquivo);
 
-        Scanner scanner = new Scanner(System.in);
+            // Passo 2: Construir o grafo de propriedades
+            Grafo grafoPropriedades = new Grafo();
 
-        // Passo 1: Escolha do tipo de área
-        System.out.println("Escolha o tipo de área (freguesia, municipio ou ilha): ");
-        String tipoArea = scanner.nextLine().toLowerCase();
+            for (int i = 0; i < propriedades.size(); i++) {
+                DadosPropriedades prop1 = propriedades.get(i);
+                for (int j = i + 1; j < propriedades.size(); j++) {
+                    DadosPropriedades prop2 = propriedades.get(j);
 
-        // Passo 2: Obter lista de áreas disponíveis com base no tipo de área
-        Set<String> areasDisponiveis = obterAreasDisponiveis(propriedades, tipoArea);
-
-        if (areasDisponiveis.isEmpty()) {
-            System.out.println("Tipo de área inválido ou nenhuma área encontrada.");
-            return;
-        }
-
-        System.out.println("\nÁreas disponíveis:");
-        List<String> listaAreas = new ArrayList<>(areasDisponiveis);
-        for (int i = 0; i < listaAreas.size(); i++) {
-            System.out.println((i + 1) + ". " + listaAreas.get(i));
-        }
-
-        System.out.println("\nEscolha o número correspondente à área desejada: ");
-        int escolha = scanner.nextInt();
-        scanner.nextLine(); // Consumir o newline
-
-        if (escolha < 1 || escolha > listaAreas.size()) {
-            System.out.println("Escolha inválida.");
-            return;
-        }
-
-        String areaEscolhida = listaAreas.get(escolha - 1);
-
-        // Passo 3: Gerar sugestões de troca
-        List<TrocaPropriedades> trocasSugeridas = SugestaoTrocas.sugerirTrocas(propriedades, tipoArea, areaEscolhida);
-
-        // Passo 4: Exibir resultados
-        System.out.println("\nSugestões de trocas encontradas:");
-        if (trocasSugeridas.isEmpty()) {
-            System.out.println("Nenhuma troca possível foi encontrada para os critérios fornecidos.");
-        } else {
-            for (TrocaPropriedades troca : trocasSugeridas) {
-                System.out.println(troca);
+                    // Verificar interseção usando bounding boxes
+                    if (grafoPropriedades.calcularBoundingBox(prop1.getGeometry())
+                            .intersects(grafoPropriedades.calcularBoundingBox(prop2.getGeometry()))) {
+                        grafoPropriedades.adicionarVizinho(prop1.getObjectId(), prop2.getObjectId());
+                        System.out.println("Proprietário " + prop1.getOwner() + " e Proprietário" + prop2.getOwner() + " são vizinhas.");
+                    }
+                }
             }
-        }
 
-        scanner.close();
-    }
+            // Passo 3: Criar o mapeamento de IDs únicos para os proprietários
+            Map<String, Integer> nomeParaIdProprietario = new HashMap<>();
+            Map<Integer, Integer> mapaPropriedadeParaProprietario = new HashMap<>();
+            int idAtual = 1;
 
-    // Método para obter a lista de áreas disponíveis com base no tipo de área
-    private static Set<String> obterAreasDisponiveis(List<DadosPropriedades> propriedades, String tipoArea) {
-        switch (tipoArea) {
-            case "freguesia":
-                return propriedades.stream()
-                        .map(DadosPropriedades::getFreguesia)
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toSet());
-            case "municipio":
-                return propriedades.stream()
-                        .map(DadosPropriedades::getMunicipio)
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toSet());
-            case "ilha":
-                return propriedades.stream()
-                        .map(DadosPropriedades::getIlha)
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toSet());
-            default:
-                return Collections.emptySet();
+            for (DadosPropriedades propriedade : propriedades) {
+                String nomeProprietario = propriedade.getOwner();
+                if (!nomeParaIdProprietario.containsKey(nomeProprietario)) {
+                    nomeParaIdProprietario.put(nomeProprietario, idAtual++);
+                }
+                mapaPropriedadeParaProprietario.put(propriedade.getObjectId(), nomeParaIdProprietario.get(nomeProprietario));
+            }
+
+            // Passo 4: Construir o grafo de proprietários
+            GrafoProprietarios grafoProprietarios = new GrafoProprietarios();
+            grafoProprietarios.construirGrafo(grafoPropriedades, mapaPropriedadeParaProprietario);
+
+            // Passo 5: Exibir os vizinhos de cada proprietário
+            System.out.println("\nVizinhos dos Proprietários:");
+            grafoProprietarios.exibirGrafo(); // Usamos diretamente o método existente
+        } catch (Exception e) {
+            System.err.println("Erro ao processar o arquivo: " + e.getMessage());
         }
-        */
     }
 }
