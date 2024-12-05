@@ -38,8 +38,20 @@ public class DadosPropriedades {
     public DadosPropriedades() {
     }
 
-    public DadosPropriedades(int objectId, String parId, String parNum, double shapeLength, double shapeArea, String geometry, String owner, String freguesia, String municipio, String ilha) {
+    public DadosPropriedades(int objectId, String parId, String parNum, double shapeLength, double shapeArea,
+                             String geometry, String owner, String freguesia, String municipio, String ilha) {
+        this.objectId = objectId;
+        this.parId = parId;
+        this.parNum = parNum;
+        this.shapeLength = shapeLength;
+        this.shapeArea = shapeArea;
+        this.geometry = geometry;
+        this.owner = owner;
+        this.freguesia = freguesia;
+        this.municipio = municipio;
+        this.ilha = ilha;
     }
+
 
     // Getters e Setters
 

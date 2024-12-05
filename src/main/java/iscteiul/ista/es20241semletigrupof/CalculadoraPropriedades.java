@@ -11,7 +11,6 @@ public class CalculadoraPropriedades {
      *
      * @param propriedades Lista de todas as propriedades disponíveis.
      * @param tipoArea      Tipo de área geográfica (freguesia, concelho ou distrito).
-     * @param valorArea     Valor específico da área geográfica.
      * @return Área média das propriedades ou -1 se não houver propriedades correspondentes.
      */
 

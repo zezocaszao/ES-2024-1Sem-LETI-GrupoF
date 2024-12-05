@@ -1,86 +1,96 @@
 package iscteiul.ista.es20241semletigrupof;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class CalculadoraPropriedadesTest {
 
-    @Test
-    void obterAreasDisponiveis() {
-        // Configuração dos dados de teste
-        DadosPropriedades prop1 = new DadosPropriedades();
-        prop1.setFreguesia("Freguesia A");
-        prop1.setMunicipio("Municipio X");
-        prop1.setIlha("Ilha Norte");
+    private List<DadosPropriedades> propriedades;
 
-        DadosPropriedades prop2 = new DadosPropriedades();
-        prop2.setFreguesia("Freguesia B");
-        prop2.setMunicipio("Municipio Y");
-        prop2.setIlha("Ilha Sul");
-
-        DadosPropriedades prop3 = new DadosPropriedades();
-        prop3.setFreguesia("Freguesia A"); // Duplicado
-        prop3.setMunicipio("Municipio X");
-        prop3.setIlha("Ilha Norte");
-
-        List<DadosPropriedades> propriedades = Arrays.asList(prop1, prop2, prop3);
-
-        // Testar "freguesia"
-        List<String> freguesias = CalculadoraPropriedades.obterAreasDisponiveis(propriedades, "freguesia");
-        assertEquals(2, freguesias.size());
-        assertTrue(freguesias.contains("Freguesia A"));
-        assertTrue(freguesias.contains("Freguesia B"));
-
-        // Testar "municipio"
-        List<String> municipios = CalculadoraPropriedades.obterAreasDisponiveis(propriedades, "municipio");
-        assertEquals(2, municipios.size());
-        assertTrue(municipios.contains("Municipio X"));
-        assertTrue(municipios.contains("Municipio Y"));
-
-        // Testar "ilha"
-        List<String> ilhas = CalculadoraPropriedades.obterAreasDisponiveis(propriedades, "ilha");
-        assertEquals(2, ilhas.size());
-        assertTrue(ilhas.contains("Ilha Norte"));
-        assertTrue(ilhas.contains("Ilha Sul"));
+    @BeforeEach
+    void setUp() {
+        propriedades = new ArrayList<>();
+        propriedades.add(new DadosPropriedades(1, "7343148.0", "2,99624E+12",
+                57.2469341921808,
+                202.05981432070362,
+                "MULTIPOLYGON (((299218.5203999998 3623637.4791, 299218.5033999998 3623637.4715," +
+                        " 299218.04000000004 3623638.4800000004, 299232.7400000002 3623644.6799999997, " +
+                        "299236.6233999999 3623637.1974, 299236.93709999975 3623636.7885999996, " +
+                        "299238.04000000004 3623633.4800000004, 299222.63999999966 3623627.1799999997, " +
+                        "299218.5203999998 3623637.4791)))\n",
+                "93", "Arco da Calheta", "Calheta", "Ilha da Madeira (Madeira)"));
+        propriedades.add(new DadosPropriedades(2, "7344660.0\n", "2,99622E+12\n",
+                55.63800662596267,
+                151.76387471712783,
+                "MULTIPOLYGON (((298724.1991999997 3623192.6094000004, 298724.3200000003 3623192.619999999" +
+                        ", 298724.26999999955 3623185.7200000007, 298723.8854 3623185.681500001, 298723.8854 3623185.6338," +
+                        " 298717.2167999996 3623184.6405999996, 298716.2909000004 3623184.495100001, 298716.1699999999 " +
+                        "3623184.5700000003, 298711.51999999955 3623184.17, 298709.1414000001 3623183.7961999997," +
+                        " 298708.48000000045 3623183.3200000003, 298705.6799999997 3623183.2200000007, " +
+                        "298704.5800000001 3623183.3200000003, 298703.98000000045 3623184.119999999, 298703.48000000045" +
+                        " 3623190.7200000007, 298704.0525000002 3623190.7905, 298704.0488999998 3623190.8441000003," +
+                        " 298705.574 3623190.9777000006, 298709.98000000045 3623191.5199999996," +
+                        " 298710.0937999999 3623191.3737000003, 298724.1991999997 3623192.6094000004)))",
+                "68\n", "Arco da Calheta", "Calheta", "Ilha da Madeira (Madeira)"));
     }
 
     @Test
-    void calcularAreaMedia() {
-        // Configuração dos dados de teste
-        DadosPropriedades prop1 = new DadosPropriedades();
-        prop1.setShapeArea(100.0);
-        prop1.setFreguesia("Freguesia A");
+    void testObterAreasDisponiveisFreguesia() {
+        List<String> areas = CalculadoraPropriedades.obterAreasDisponiveis(propriedades, "freguesia");
+        assertEquals(1, areas.size());
+        assertTrue(areas.contains("Arco da Calheta"));
+    }
 
-        DadosPropriedades prop2 = new DadosPropriedades();
-        prop2.setShapeArea(200.0);
-        prop2.setFreguesia("Freguesia A");
+    @Test
+    void testObterAreasDisponiveisMunicipio() {
+        List<String> areas = CalculadoraPropriedades.obterAreasDisponiveis(propriedades, "municipio");
+        assertEquals(1, areas.size());
+        assertTrue(areas.contains("Calheta"));
+    }
 
-        DadosPropriedades prop3 = new DadosPropriedades();
-        prop3.setShapeArea(150.0);
-        prop3.setFreguesia("Freguesia B");
+    @Test
+    void testObterAreasDisponiveisIlha() {
+        List<String> areas = CalculadoraPropriedades.obterAreasDisponiveis(propriedades, "ilha");
+        assertEquals(1, areas.size());
+        assertTrue(areas.contains("Ilha da Madeira (Madeira)"));
+    }
 
-        List<DadosPropriedades> propriedades = Arrays.asList(prop1, prop2, prop3);
+    @Test
+    void testCalcularAreaMediaFreguesia() {
+        double media = CalculadoraPropriedades.calcularAreaMedia(propriedades, "freguesia", "Arco da Calheta");
+        assertEquals(176.91184451891573, media, 0.001);
+    }
 
-        // Testar cálculo da área média para "Freguesia A"
-        double mediaFreguesiaA = CalculadoraPropriedades.calcularAreaMedia(propriedades, "freguesia", "Freguesia A");
-        assertEquals(150.0, mediaFreguesiaA);
+    @Test
+    void testCalcularAreaMediaMunicipio() {
+        double media = CalculadoraPropriedades.calcularAreaMedia(propriedades, "municipio", "Calheta");
+        assertEquals(176.91184451891573, media, 0.001); // Média ponderada pelos valores adicionados
+    }
 
-        // Testar cálculo da área média para "Freguesia B"
-        double mediaFreguesiaB = CalculadoraPropriedades.calcularAreaMedia(propriedades, "freguesia", "Freguesia B");
-        assertEquals(150.0, mediaFreguesiaB);
+    @Test
+    void testCalcularAreaMediaSemResultados() {
+        double media = CalculadoraPropriedades.calcularAreaMedia(propriedades, "freguesia", "Freguesia inexistente");
+        assertEquals(-1, media);
+    }
 
-        // Testar cálculo da área média para uma freguesia inexistente
-        double mediaFreguesiaInexistente = CalculadoraPropriedades.calcularAreaMedia(propriedades, "freguesia", "Freguesia C");
-        assertEquals(-1, mediaFreguesiaInexistente);
+    @Test
+    void testObterAreasDisponiveisTipoInvalido() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                CalculadoraPropriedades.obterAreasDisponiveis(propriedades, "tipoInvalido")
+        );
+        assertEquals("Tipo de área inválido. Use: freguesia, municipio ou ilha.", exception.getMessage());
+    }
 
-        // Testar cálculo da área média com tipo inválido
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            CalculadoraPropriedades.calcularAreaMedia(propriedades, "tipoInvalido", "Freguesia A");
-        });
+    @Test
+    void testCalcularAreaMediaTipoInvalido() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                CalculadoraPropriedades.calcularAreaMedia(propriedades, "tipoInvalido", "Ilha da Madeira (Madeira)")
+        );
         assertEquals("Tipo de área inválido. Use: freguesia, municipio ou ilha.", exception.getMessage());
     }
 }

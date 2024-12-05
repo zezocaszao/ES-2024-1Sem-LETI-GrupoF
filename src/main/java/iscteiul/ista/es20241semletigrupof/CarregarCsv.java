@@ -17,6 +17,8 @@ public class CarregarCsv {
                     .withSeparator(';')
                     .build()
                     .parse();
+        } catch (Exception e) {
+            throw new Exception("Erro ao carregar o arquivo CSV: " + caminhoArquivo + ". Verifique se o arquivo existe e está acessível.", e);
         }
     }
 }
