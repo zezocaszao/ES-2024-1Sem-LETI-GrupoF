@@ -7,13 +7,13 @@
 
 <?import javafx.scene.layout.VBox?>
 <GridPane xmlns:fx="http://javafx.com/fxml" fx:controller="iscteiul.ista.es20241semletigrupof.HelloController"
-          hgap="10" vgap="10" alignment="center">
+          hgap="20" vgap="20" alignment="center">
     <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
+        <Insets top="100" right="80" bottom="80" left="80"/>
     </padding>
 
     <!-- Título -->
-    <Text text="Áreas Geográficas" style="-fx-font-size: 20px;" GridPane.columnSpan="2" GridPane.halignment="center"/>
+    <Text text="Áreas Geográficas" style="-fx-font-size: 200px;" GridPane.columnSpan="4" GridPane.halignment="center"/>
 
     <!-- Botões para os exercícios -->
     <Button text="Exercício 1" onAction="#onExercicio1Click" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
@@ -24,7 +24,7 @@
     <Button text="Exercício 6" onAction="#onExercicio6Click" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
     <!-- Área dinâmica -->
-    <VBox fx:id="container" GridPane.rowIndex="4" GridPane.columnSpan="2" alignment="top_center" spacing="10">
+    <VBox fx:id="container" GridPane.rowIndex="6" GridPane.columnSpan="4" alignment="top_center" spacing="10">
         <!-- O conteúdo dinâmico será adicionado aqui -->
     </VBox>
 </GridPane>

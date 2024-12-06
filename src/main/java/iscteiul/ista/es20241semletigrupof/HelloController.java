@@ -88,8 +88,8 @@ public class HelloController {
             // Criar um TextArea para exibir os dados
             TextArea textArea = new TextArea();
             textArea.setEditable(false);
-            textArea.setPrefHeight(400);
-            textArea.setPrefWidth(600);
+            textArea.setPrefHeight(600);
+            textArea.setPrefWidth(800);
 
             // Construir o texto a partir das propriedades
             StringBuilder stringBuilder = new StringBuilder();
@@ -105,7 +105,7 @@ public class HelloController {
             // Adicionar o TextArea a um Scene e exibir na nova janela
             VBox root = new VBox(textArea);
             root.setPadding(new Insets(10));
-            Scene scene = new Scene(root, 650, 450);
+            Scene scene = new Scene(root, 850, 650);
             novaJanela.setScene(scene);
 
             // Exibir a nova janela
