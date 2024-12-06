@@ -4,15 +4,19 @@ import java.util.List;
 import java.util.OptionalDouble;
 import java.util.stream.Collectors;
 
+/**
+ * Calcula a área média das propriedades de uma área geográfica/administrativa.
+ */
 public class CalculadoraPropriedades {
 
-    /**
-     * Calcula a área média das propriedades de uma área geográfica/administrativa.
-     *
-     * @param propriedades Lista de todas as propriedades disponíveis.
-     * @param tipoArea      Tipo de área geográfica (freguesia, concelho ou distrito).
-     * @return Área média das propriedades ou -1 se não houver propriedades correspondentes.
-     */
+/**
+ * Obtém as áreas geográficas disponíveis em uma lista de propriedades.
+ * A área pode ser uma freguesia, município ou ilha, dependendo do tipo de área especificado pelo utilizador.
+ *
+ * @param propriedades Lista de todas as propriedades disponíveis.
+ * @param tipoArea     Tipo de área geográfica que pode ser "freguesia", "municipio" ou "ilha".
+ * @return Lista de áreas distintas, ordenadas alfabeticamente, de acordo com o tipo de área.
+ */
 
     public static List<String> obterAreasDisponiveis(List<DadosPropriedades> propriedades, String tipoArea) {
         return propriedades.stream()
@@ -32,6 +36,14 @@ public class CalculadoraPropriedades {
                 .sorted()   // Ordenar alfabeticamente
                 .collect(Collectors.toList());
     }
+
+    /**
+     * Calcula a área média das propriedades dentro de uma área geográfica especificada.
+     * @param propriedades Lista de todas as propriedades disponíveis.
+     * @param tipoArea     Tipo de área geográfica.
+     * @param valorArea    O valor específico da área  para calcular a média.
+     * @return A área média das propriedades dentro da área especificada.
+     */
     public static double calcularAreaMedia(List<DadosPropriedades> propriedades, String tipoArea, String valorArea) {
         // Filtrar as propriedades de acordo com o tipo de área e valor especificado
         List<DadosPropriedades> propriedadesFiltradas = propriedades.stream()

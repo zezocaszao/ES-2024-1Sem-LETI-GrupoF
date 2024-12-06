@@ -49,6 +49,8 @@ public class HelloController {
     private double mouseY = 0;
 
     public void onCarregarCSVClick() {
+
+
         // Cria uma instância do FileChooser
         FileChooser fileChooser = new FileChooser();
 
@@ -241,64 +243,51 @@ public class HelloController {
     @FXML
     protected void onExercicio3Click() {
         try {
-            //String caminhoCsv = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle-1.1.csv";
-
-            //List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(caminhoCsv);
+            // Carregar as propriedades a partir do arquivo CSV
             List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(arquivoCSV.getAbsolutePath());
 
-            TextInputDialog tipoDialog = new TextInputDialog();
+            // Exibir diálogo para o tipo de área (usando ChoiceDialog)
+            List<String> tiposArea = List.of("freguesia", "municipio", "ilha");
+            ChoiceDialog<String> tipoDialog = new ChoiceDialog<>(tiposArea.get(0), tiposArea);
             tipoDialog.setTitle("Seleção de Tipo de Área");
-            tipoDialog.setHeaderText("Digite o tipo de área geográfica (freguesia, municipio, ilha):");
+            tipoDialog.setHeaderText("Escolha o tipo de área geográfica:");
             tipoDialog.setContentText("Tipo de área:");
-            Optional<String> tipoAreaOpt = tipoDialog.showAndWait();
 
-            if (!tipoAreaOpt.isPresent() || tipoAreaOpt.get().trim().isEmpty()) {
+            Optional<String> tipoAreaOpt = tipoDialog.showAndWait();
+            if (!tipoAreaOpt.isPresent()) {
                 showAlert("Erro", "O tipo de área geográfica é obrigatório.");
                 return;
             }
 
             String tipoArea = tipoAreaOpt.get().trim().toLowerCase();
-            if (!List.of("freguesia", "municipio", "ilha").contains(tipoArea)) {
-                showAlert("Erro", "Tipo de área inválido. Use: freguesia, municipio ou ilha.");
-                return;
-            }
-
             List<String> areasDisponiveis = CalculadoraPropriedades.obterAreasDisponiveis(propriedades, tipoArea);
             if (areasDisponiveis.isEmpty()) {
                 showAlert("Erro", "Não há áreas disponíveis para o tipo especificado: " + tipoArea);
                 return;
             }
 
-            StringBuilder areasTexto = new StringBuilder("Áreas disponíveis:\n");
-            for (String area : areasDisponiveis) {
-                areasTexto.append("- ").append(area).append("\n");
-            }
+            // Exibir lista de áreas para o utilizador escolher (usando ChoiceDialog)
+            ChoiceDialog<String> areaDialog = new ChoiceDialog<>(areasDisponiveis.get(0), areasDisponiveis);
+            areaDialog.setTitle("Escolha a Área");
+            areaDialog.setHeaderText("Escolha uma área de " + tipoArea);
+            areaDialog.setContentText("Área:");
 
-            TextArea areasDisponiveisArea = new TextArea(areasTexto.toString());
-            areasDisponiveisArea.setEditable(false);
-            Alert areasDialog = new Alert(Alert.AlertType.INFORMATION);
-            areasDialog.setTitle("Áreas Disponíveis");
-            areasDialog.setHeaderText("Selecione uma área a partir da lista abaixo:");
-            areasDialog.getDialogPane().setContent(areasDisponiveisArea);
-            areasDialog.showAndWait();
-            TextInputDialog valorDialog = new TextInputDialog();
-            valorDialog.setTitle("Seleção de Valor da Área");
-            valorDialog.setHeaderText("Digite o valor da área geográfica (ex.: 'Arco da Calheta' ou 'Calheta'):");
-            valorDialog.setContentText("Valor da área:");
-            Optional<String> valorAreaOpt = valorDialog.showAndWait();
-
-            if (!valorAreaOpt.isPresent() || valorAreaOpt.get().trim().isEmpty()) {
-                showAlert("Erro", "O valor da área é obrigatório.");
+            Optional<String> areaEscolhidaOpt = areaDialog.showAndWait();
+            if (!areaEscolhidaOpt.isPresent()) {
+                showAlert("Erro", "Nenhuma área foi selecionada.");
                 return;
             }
 
-            String valorArea = valorAreaOpt.get().trim();
-            double areaMedia = CalculadoraPropriedades.calcularAreaMedia(propriedades, tipoArea, valorArea);
+            String areaEscolhida = areaEscolhidaOpt.get();
 
+            // Calcular a área média das propriedades na área escolhida
+            double areaMedia = CalculadoraPropriedades.calcularAreaMedia(propriedades, tipoArea, areaEscolhida);
+
+            // Exibir o resultado da área média
             if (areaMedia == -1) {
-                showAlert("Resultado", "Nenhuma propriedade encontrada para a área especificada: " + valorArea + " (" + tipoArea + ").");
+                showAlert("Resultado", "Nenhuma propriedade encontrada para a área especificada: " + areaEscolhida + " (" + tipoArea + ").");
             } else {
-                showAlert("Resultado", String.format("A área média das propriedades em %s (%s) é: %.2f", valorArea, tipoArea, areaMedia));
+                showAlert("Resultado", String.format("A área média das propriedades em %s (%s) é: %.2f", areaEscolhida, tipoArea, areaMedia));
             }
 
         } catch (Exception e) {
@@ -306,6 +295,7 @@ public class HelloController {
             e.printStackTrace();
         }
     }
+
 
     @FXML
     protected void onExercicio4Click() {
@@ -316,17 +306,17 @@ public class HelloController {
                 return;
             }
 
-            // Carregar as propriedades a partir do arquivo CSV
             List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(arquivoCSV.getAbsolutePath());
 
-            // Exibir diálogo para o tipo de área
-            TextInputDialog tipoDialog = new TextInputDialog();
+            // Exibir diálogo para o tipo de área (usando ChoiceDialog)
+            List<String> tiposArea = List.of("freguesia", "municipio", "ilha");
+            ChoiceDialog<String> tipoDialog = new ChoiceDialog<>(tiposArea.get(0), tiposArea);
             tipoDialog.setTitle("Seleção de Tipo de Área");
-            tipoDialog.setHeaderText("Digite o tipo de área geográfica (freguesia, municipio, ilha):");
+            tipoDialog.setHeaderText("Escolha o tipo de área geográfica:");
             tipoDialog.setContentText("Tipo de área:");
-            Optional<String> tipoAreaOpt = tipoDialog.showAndWait();
 
-            if (!tipoAreaOpt.isPresent() || tipoAreaOpt.get().trim().isEmpty()) {
+            Optional<String> tipoAreaOpt = tipoDialog.showAndWait();
+            if (!tipoAreaOpt.isPresent()) {
                 showAlert("Erro", "O tipo de área geográfica é obrigatório.");
                 return;
             }
@@ -338,7 +328,7 @@ public class HelloController {
             }
 
             // Obter as áreas disponíveis
-            List<String> areasDisponiveis = CalcularPropriedadesOwners.obterAreasDisponiveis(propriedades, tipoArea);
+            List<String> areasDisponiveis = CalculadoraPropriedades.obterAreasDisponiveis(propriedades, tipoArea);
             if (areasDisponiveis.isEmpty()) {
                 showAlert("Erro", "Não há áreas disponíveis para o tipo especificado: " + tipoArea);
                 return;
