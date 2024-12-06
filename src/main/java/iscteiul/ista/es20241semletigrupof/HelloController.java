@@ -37,9 +37,9 @@ public class HelloController {
     private Pane paneGrafo;
 
     @FXML
-    private Label nomeArquivoLabel; // Variável para o Label
+    Label nomeArquivoLabel; // Variável para o Label
 
-    private File arquivoCSV; // Variável para armazenar o arquivo CSV carregado
+    File arquivoCSV; // Variável para armazenar o arquivo CSV carregado
 
     @FXML
     private ChoiceBox<String> tipoAreaChoiceBox;
