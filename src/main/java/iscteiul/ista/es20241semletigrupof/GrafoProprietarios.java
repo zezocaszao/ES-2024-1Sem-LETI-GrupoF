@@ -86,6 +86,7 @@ public class GrafoProprietarios {
     }
 
     public boolean saoVizinhos(String owner1, String owner2) {
+        System.out.println(adjacencias.getOrDefault(1, new HashSet<>()).contains(44));
         return adjacencias.getOrDefault(owner1, new HashSet<>()).contains(owner2);
     }
 

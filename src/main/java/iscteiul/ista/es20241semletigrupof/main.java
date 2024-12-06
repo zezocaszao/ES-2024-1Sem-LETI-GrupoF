@@ -11,5 +11,6 @@ public class main {
         String caminhoCsv = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle-1.1.csv";
       HelloApplication.main(args);
 
+
     }
 }
