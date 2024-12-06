@@ -5,37 +5,25 @@ import java.util.stream.Collectors;
 
 public class CalcularPropriedadesOwners {
 
-    // Método para obter as áreas disponíveis
-    public static List<String> obterAreasDisponiveis(List<DadosPropriedades> propriedades, String tipoArea) {
-        return propriedades.stream()
-                .map(propriedade -> {
-                    switch (tipoArea.toLowerCase()) {
-                        case "freguesia":
-                            return propriedade.getFreguesia();
-                        case "municipio":
-                            return propriedade.getMunicipio();
-                        case "ilha":
-                            return propriedade.getIlha();
-                        default:
-                            throw new IllegalArgumentException("Tipo de área inválido. Use: freguesia, municipio ou ilha.");
-                    }
-                })
-                .distinct() // Remover duplicatas
-                .sorted()   // Ordenar alfabeticamente
-                .collect(Collectors.toList());
-    }
-
-    // Método para obter os donos disponíveis em uma área específica
+    /**
+     * Obtém os donos das propriedades em uma área específica.
+     * Filtra as propriedades pela área fornecida  e retorna uma lista dos donos disponíveis nessa área.
+     *
+     * @param propriedades Lista de todas as propriedades disponíveis.
+     * @param tipoArea     Tipo de área geográfica.
+     * @param areaEscolhida A área geográfica específica
+     * @return Lista de donos distintos.
+     */
     public static List<String> obterDonosPorArea(List<DadosPropriedades> propriedades, String tipoArea, String areaEscolhida) {
         return propriedades.stream()
                 .filter(propriedade -> {
                     switch (tipoArea.toLowerCase()) {
                         case "freguesia":
-                            return areaEscolhida != null && propriedade.getFreguesia() != null && propriedade.getFreguesia().equals(areaEscolhida);
+                            return  propriedade.getFreguesia().equals(areaEscolhida);
                         case "municipio":
-                            return areaEscolhida != null && propriedade.getMunicipio() != null && propriedade.getMunicipio().equals(areaEscolhida);
+                            return propriedade.getMunicipio().equals(areaEscolhida);
                         case "ilha":
-                            return areaEscolhida != null && propriedade.getIlha() != null && propriedade.getIlha().equals(areaEscolhida);
+                            return  propriedade.getIlha().equals(areaEscolhida);
                         default:
                             return false;
                     }
@@ -46,17 +34,26 @@ public class CalcularPropriedadesOwners {
                 .collect(Collectors.toList());
     }
 
-    // Método para calcular a área média das propriedades de um dono dentro de uma área específica
+    /**
+     * Calcula a área média das propriedades de um dono dentro de uma área geográfica específica.
+     * Filtra as propriedades pela área e pelo dono especificado e calcula a área média das propriedades do dono.
+     *
+     * @param propriedades Lista de todas as propriedades disponíveis.
+     * @param tipoArea     Tipo de área geográfica.
+     * @param areaEscolhida A área geográfica específica .
+     * @param donoEscolhido O nome do dono cujas propriedades serão consideradas para o cálculo da área média.
+     * @return A área média das propriedades do dono na área especificada.
+     */
     public static double calcularAreaMediaPorDono(List<DadosPropriedades> propriedades, String tipoArea, String areaEscolhida, String donoEscolhido) {
         List<DadosPropriedades> propriedadesFiltradas = propriedades.stream()
                 .filter(propriedade -> {
                     switch (tipoArea.toLowerCase()) {
                         case "freguesia":
-                            return areaEscolhida != null && propriedade.getFreguesia() != null && propriedade.getFreguesia().equals(areaEscolhida);
+                            return propriedade.getFreguesia().equals(areaEscolhida);
                         case "municipio":
-                            return areaEscolhida != null && propriedade.getMunicipio() != null && propriedade.getMunicipio().equals(areaEscolhida);
+                            return  propriedade.getMunicipio().equals(areaEscolhida);
                         case "ilha":
-                            return areaEscolhida != null && propriedade.getIlha() != null && propriedade.getIlha().equals(areaEscolhida);
+                            return  propriedade.getIlha().equals(areaEscolhida);
                         default:
                             return false;
                     }
@@ -75,7 +72,12 @@ public class CalcularPropriedadesOwners {
     }
 
 
-    // Exemplo de uso para escolher a área, o dono e calcular a média das áreas
+    /**
+     * Exibe a área média das propriedades de um dono em uma área geográfica específica,
+     * com base na entrada do utilizador. O utilizador escolhe a área e o dono, e o método calcula e exibe a área média.
+     *
+     * @param propriedades Lista de todas as propriedades disponíveis.
+     */
     public static void exibirAreaMediaPorDono(List<DadosPropriedades> propriedades) {
         Scanner scanner = new Scanner(System.in);
 
@@ -84,7 +86,7 @@ public class CalcularPropriedadesOwners {
         String tipoArea = scanner.nextLine();
 
         // Obter as áreas disponíveis
-        List<String> areasDisponiveis = obterAreasDisponiveis(propriedades, tipoArea);
+        List<String> areasDisponiveis = CalculadoraPropriedades.obterAreasDisponiveis(propriedades, tipoArea);
         System.out.println("Áreas disponíveis: ");
         areasDisponiveis.forEach(System.out::println);
 
@@ -104,3 +106,15 @@ public class CalcularPropriedadesOwners {
         System.out.println("A área média das propriedades do dono " + donoEscolhido + " na área " + areaEscolhida + " é: " + areaMedia);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+

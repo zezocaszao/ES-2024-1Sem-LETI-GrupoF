@@ -52,13 +52,13 @@ public class CalcularPropriedadesOwnersTest {
     public void testObterAreasDisponiveis() {
         List<DadosPropriedades> propriedades = criarPropriedadesTeste();
 
-        List<String> freguesias = CalcularPropriedadesOwners.obterAreasDisponiveis(propriedades, "freguesia");
+        List<String> freguesias = CalculadoraPropriedades.obterAreasDisponiveis(propriedades, "freguesia");
         assertEquals(Arrays.asList("Arco da Calheta", "Ponto do Sol"), freguesias);
 
-        List<String> municipios = CalcularPropriedadesOwners.obterAreasDisponiveis(propriedades, "municipio");
+        List<String> municipios = CalculadoraPropriedades.obterAreasDisponiveis(propriedades, "municipio");
         assertEquals(Arrays.asList("Calheta", "Ponta do Sol"), municipios);
 
-        List<String> ilhas = CalcularPropriedadesOwners.obterAreasDisponiveis(propriedades, "ilha");
+        List<String> ilhas = CalculadoraPropriedades.obterAreasDisponiveis(propriedades, "ilha");
         assertEquals(Arrays.asList("Ilha da Madeira (Madeira)"), ilhas);
     }
 
@@ -97,7 +97,7 @@ public class CalcularPropriedadesOwnersTest {
         List<DadosPropriedades> propriedades = criarPropriedadesTeste();
 
         assertThrows(IllegalArgumentException.class, () ->
-                CalcularPropriedadesOwners.obterAreasDisponiveis(propriedades, "invalido")
+                CalculadoraPropriedades.obterAreasDisponiveis(propriedades, "invalido")
         );
     }
 }
