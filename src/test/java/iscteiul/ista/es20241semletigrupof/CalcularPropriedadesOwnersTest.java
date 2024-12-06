@@ -7,7 +7,17 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Testes unitários para a funcionalidade de cálculo dos proprietários de propriedades e suas áreas,
+ * incluindo a obtenção de áreas disponíveis e o cálculo da área média por proprietário.
+ */
 public class CalcularPropriedadesOwnersTest {
+
+    /**
+     * Cria uma lista de dados de propriedades de exemplo a ser usada nos casos de teste.
+     *
+     * @return uma lista de objetos {@link DadosPropriedades} .
+     */
 
     private List<DadosPropriedades> criarPropriedadesTeste() {
         return Arrays.asList(
@@ -43,11 +53,13 @@ public class CalcularPropriedadesOwnersTest {
                                 "303616.6974999998 3620622.665100001, 303624.17069999967 3620629.9185000006, " +
                                 "303637.1189000001 3620643.0599000007)))",
                         "497",	"Ponta do Sol",	"Ponta do Sol",	"Ilha da Madeira (Madeira)"));
-               // new DadosPropriedades(2, "Freguesia B", "Município X", "Ilha 1", "Dono 2", 200.0, "MULTIPOLYGON(((0 0, 3 3, 4 4, 0 0)))");
-                //new DadosPropriedades(3, "Freguesia A", "Município Y", "Ilha 2", "Dono 1", 150.0, "MULTIPOLYGON(((1 1, 2 2, 3 3, 1 1)))");
-                //new DadosPropriedades(4, "Freguesia C", "Município Y", "Ilha 2", "Dono 3", 300.0, "MULTIPOLYGON(((2 2, 3 3, 4 4, 2 2)))");
+        // new DadosPropriedades(2, "Freguesia B", "Município X", "Ilha 1", "Dono 2", 200.0, "MULTIPOLYGON(((0 0, 3 3, 4 4, 0 0)))");
+        //new DadosPropriedades(3, "Freguesia A", "Município Y", "Ilha 2", "Dono 1", 150.0, "MULTIPOLYGON(((1 1, 2 2, 3 3, 1 1)))");
+        //new DadosPropriedades(4, "Freguesia C", "Município Y", "Ilha 2", "Dono 3", 300.0, "MULTIPOLYGON(((2 2, 3 3, 4 4, 2 2)))");
     }
-
+    /**
+     * Caso de teste para obter as áreas disponíveis (freguesia, município, ilha) a partir dos dados de propriedades.
+     */
     @Test
     public void testObterAreasDisponiveis() {
         List<DadosPropriedades> propriedades = criarPropriedadesTeste();
@@ -61,6 +73,11 @@ public class CalcularPropriedadesOwnersTest {
         List<String> ilhas = CalculadoraPropriedades.obterAreasDisponiveis(propriedades, "ilha");
         assertEquals(Arrays.asList("Ilha da Madeira (Madeira)"), ilhas);
     }
+
+
+    /**
+     * Caso de teste para obter os proprietários de propriedades por área específica (freguesia, município, ilha).
+     */
 
     @Test
     public void testObterDonosPorArea() {
@@ -79,6 +96,9 @@ public class CalcularPropriedadesOwnersTest {
         assertEquals(Arrays.asList("497","93" ), donosIlha2);
     }
 
+    /**
+     * Caso de teste para calcular a área média por proprietário dentro de uma região específica (freguesia, município, ilha).
+     */
     @Test
     public void testCalcularAreaMediaPorDono() {
         List<DadosPropriedades> propriedades = criarPropriedadesTeste();
@@ -91,6 +111,10 @@ public class CalcularPropriedadesOwnersTest {
                 "ilha", "Ilha da Madeira (Madeira)", "497");
         assertEquals(1123.7614206059889, areaMediaDono1Ilha2);
     }
+
+    /**
+     * Caso de teste para o tratamento de tipo de área inválido nos métodos.
+     */
 
     @Test
     public void testTipoAreaInvalido() {

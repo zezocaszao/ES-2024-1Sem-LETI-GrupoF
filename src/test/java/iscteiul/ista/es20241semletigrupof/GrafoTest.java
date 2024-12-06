@@ -8,14 +8,34 @@ import static org.junit.jupiter.api.Assertions.*;
 import javafx.geometry.BoundingBox;
 import java.util.*;
 
+
+
+/**
+ * Classe de testes unitários para a classe Grafo, utilizando JUnit 5.
+ *
+ * <p>Esta classe contém métodos de teste para verificar o comportamento da classe {@code Grafo},
+ */
 public class GrafoTest {
 
     private Grafo grafo;
+
+
+    /**
+     * Inicializa o grafo antes de cada teste.
+     *
+     * <p>Este método é executado antes de cada teste para garantir que o grafo seja
+     */
 
     @BeforeEach
     public void setUp() {
         grafo = new Grafo();
     }
+
+
+    /**
+     * Testa a adição de vizinhos no grafo e a verificação de conexões bidirecionais.
+     *
+     */
 
     @Test
     public void testAdicionarVizinho() {
@@ -27,6 +47,12 @@ public class GrafoTest {
         assertTrue(grafo.saoVizinhos(2, 3));
         assertFalse(grafo.saoVizinhos(1, 3)); // Não há conexão direta
     }
+
+
+    /**
+     * Testa o cálculo do bounding box a partir de uma geometria válida e inválida.
+     *
+     */
 
     @Test
     public void testCalcularBoundingBox() {
@@ -43,6 +69,14 @@ public class GrafoTest {
         assertEquals(0, emptyBox.getWidth());
         assertEquals(0, emptyBox.getHeight());
     }
+
+
+    /**
+     * Testa a construção do grafo a partir de dados de propriedades e a verificação de vizinhanças.
+     *
+     * <p>Este método verifica se o grafo é corretamente construído a partir de uma lista de propriedades
+     * e se as conexões de vizinhança entre os proprietários estão a ser corretamente estabelecidas.</p>
+     */
 
     @Test
     public void testConstruirGrafo() {
@@ -67,6 +101,10 @@ public class GrafoTest {
         assertFalse(grafo.saoVizinhos(1, 2));
         assertFalse(grafo.saoVizinhos(2, 178));
     }
+
+    /**
+     * Testa a exibição do grafo
+     */
 
     @Test
     public void testExibirGrafo() {

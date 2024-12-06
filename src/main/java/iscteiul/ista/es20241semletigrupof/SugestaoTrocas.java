@@ -2,9 +2,26 @@ package iscteiul.ista.es20241semletigrupof;
 
 import java.util.*;
 
+/**
+ * Classe responsável por sugerir trocas de propriedades entre vizinhos com base em áreas geográficas.
+ * A sugestão de trocas é gerada com base em um grafo de proprietários e a avaliação da melhoria da distribuição das propriedades.
+ */
 public class SugestaoTrocas {
 
-    // Método para gerar sugestões de troca
+    /**
+     * Gera uma lista de sugestões de trocas de propriedades entre vizinhos com base em um grafo de proprietários.
+     * A troca é sugerida entre dois proprietários com propriedades na área escolhida.
+     * <p>
+     * A sugestão de troca é calculada considerando a melhoria na média da área das propriedades dos donos após a troca.
+
+     *
+     * @param propriedades  A lista de todas as propriedades disponíveis.
+     * @param tipoArea      O tipo de área para filtrar as propriedades (freguesia, município ou ilha).
+     * @param areaEscolhida O nome da área escolhida para filtrar as propriedades .
+     * @param grafo         O grafo de proprietários que contém as relações de vizinhança entre os proprietários.
+     * @return Uma lista de sugestões de trocas de propriedades, onde cada sugestão é representada por um objeto
+     *         {@link TrocaPropriedades}.
+     */
     public static List<TrocaPropriedades> sugerirTrocas(List<DadosPropriedades> propriedades, String tipoArea,
                                                         String areaEscolhida, GrafoProprietarios grafo) {
         List<TrocaPropriedades> trocasSugeridas = new ArrayList<>();

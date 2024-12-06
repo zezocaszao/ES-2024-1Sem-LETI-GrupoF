@@ -9,7 +9,14 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Classe de testes unitários para o carregamento de propriedades a partir de um arquivo CSV.
+ */
 class CarregarCsvTest {
+
+    /**
+     * Testa o carregamento de um arquivo CSV válido contendo dados de propriedades.
+     */
 
     @Test
     void testCarregarPropriedadesArquivoValido() throws Exception {
@@ -30,6 +37,10 @@ class CarregarCsvTest {
         assertNotNull(primeiraPropriedade.getFreguesia(), "O campo 'freguesia' da primeira propriedade não deve ser nulo.");
     }
 
+    /**
+     * Testa o carregamento de um arquivo CSV inválido (não encontrado).
+     */
+
     @Test
     void testCarregarPropriedadesArquivoInvalido() {
         String caminhoInvalido = "caminho/invalido.csv";
@@ -43,6 +54,9 @@ class CarregarCsvTest {
                 "A mensagem de erro deve indicar que o arquivo não foi encontrado.");
     }
 
+    /**
+     * Testa o carregamento de um arquivo CSV vazio.
+     */
 
     @Test
     void testCarregarPropriedadesArquivoVazio() throws Exception {

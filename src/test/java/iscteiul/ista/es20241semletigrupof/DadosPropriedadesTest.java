@@ -4,13 +4,24 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Classe de testes unitários para a classe {@link DadosPropriedades}.
+ */
 class DadosPropriedadesTest {
+
+    /**
+     * Testa o construtor sem argumentos da classe {@link DadosPropriedades}.
+     */
 
     @Test
     void testConstrutorSemArgumentos() {
         DadosPropriedades dados = new DadosPropriedades();
         assertNotNull(dados, "O construtor sem argumentos deve criar um objeto não nulo.");
     }
+
+    /**
+     * Testa o construtor com argumentos da classe {@link DadosPropriedades}.
+     */
 
     @Test
     void testConstrutorComArgumentos() {
@@ -30,6 +41,13 @@ class DadosPropriedadesTest {
         assertEquals("Calheta", dados.getMunicipio());
         assertEquals("Ilha da Madeira (Madeira)", dados.getIlha());
     }
+
+    /**
+     * Testa os métodos getters e setters da classe {@link DadosPropriedades}.
+     *
+     * <p>Este teste verifica se os métodos getters e setters funcionam corretamente, ou seja, se os valores
+     * atribuídos através dos setters podem ser recuperados corretamente pelos getters.</p>
+     */
 
     @Test
     void testGettersAndSetters() {
@@ -57,6 +75,14 @@ class DadosPropriedadesTest {
         assertEquals("Outro Município", dados.getMunicipio());
         assertEquals("Outra Ilha", dados.getIlha());
     }
+
+
+    /**
+     * Testa o método {@code toString()} da classe {@link DadosPropriedades}.
+     *
+     * <p>Este teste verifica se o método {@code toString()} gera a representação em string da classe
+     * de acordo com o formato esperado.</p>
+     */
 
     @Test
     void testToString() {

@@ -8,10 +8,18 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Classe de testes unitários para a classe {@link CalculadoraPropriedades}.
+ * Testa as funcionalidades de cálculo de áreas e obtenção de áreas disponíveis para diferentes tipos de áreas.
+ */
+
 class CalculadoraPropriedadesTest {
 
     private List<DadosPropriedades> propriedades;
-
+    /**
+     * Configura o ambiente de teste ao criar uma lista de propriedades para ser utilizada nos testes.
+     * Este método é executado antes de cada teste.
+     */
     @BeforeEach
     void setUp() {
         propriedades = new ArrayList<>();
@@ -39,20 +47,28 @@ class CalculadoraPropriedadesTest {
                 "68\n", "Arco da Calheta", "Calheta", "Ilha da Madeira (Madeira)"));
     }
 
+    /**
+     * Testa o método {@link CalculadoraPropriedades#obterAreasDisponiveis(List, String)} para o tipo "freguesia".
+     */
+
     @Test
     void testObterAreasDisponiveisFreguesia() {
         List<String> areas = CalculadoraPropriedades.obterAreasDisponiveis(propriedades, "freguesia");
         assertEquals(1, areas.size());
         assertTrue(areas.contains("Arco da Calheta"));
     }
-
+    /**
+     * Testa o método {@link CalculadoraPropriedades#obterAreasDisponiveis(List, String)} para o tipo "municipio".
+     */
     @Test
     void testObterAreasDisponiveisMunicipio() {
         List<String> areas = CalculadoraPropriedades.obterAreasDisponiveis(propriedades, "municipio");
         assertEquals(1, areas.size());
         assertTrue(areas.contains("Calheta"));
     }
-
+    /**
+     * Testa o método {@link CalculadoraPropriedades#obterAreasDisponiveis(List, String)} para o tipo "ilha".
+     */
     @Test
     void testObterAreasDisponiveisIlha() {
         List<String> areas = CalculadoraPropriedades.obterAreasDisponiveis(propriedades, "ilha");
@@ -60,24 +76,39 @@ class CalculadoraPropriedadesTest {
         assertTrue(areas.contains("Ilha da Madeira (Madeira)"));
     }
 
+    /**
+     * Testa o método {@link CalculadoraPropriedades#calcularAreaMedia(List, String, String)} para calcular a média de área
+     * de propriedades na freguesia "Arco da Calheta".
+     */
+
     @Test
     void testCalcularAreaMediaFreguesia() {
         double media = CalculadoraPropriedades.calcularAreaMedia(propriedades, "freguesia", "Arco da Calheta");
         assertEquals(176.91184451891573, media, 0.001);
     }
+    /**
+     * Testa o método {@link CalculadoraPropriedades#calcularAreaMedia(List, String, String)} para calcular a média de área
+     * de propriedades na municipio "Arco da Calheta".
+     */
 
     @Test
     void testCalcularAreaMediaMunicipio() {
         double media = CalculadoraPropriedades.calcularAreaMedia(propriedades, "municipio", "Calheta");
         assertEquals(176.91184451891573, media, 0.001); // Média ponderada pelos valores adicionados
     }
-
+    /**
+     * Testa o método {@link CalculadoraPropriedades#calcularAreaMedia(List, String, String)}
+     * resultados para uma freguesia inexistente.
+     */
     @Test
     void testCalcularAreaMediaSemResultados() {
         double media = CalculadoraPropriedades.calcularAreaMedia(propriedades, "freguesia", "Freguesia inexistente");
         assertEquals(-1, media);
     }
-
+    /**
+     * Testa o método {@link CalculadoraPropriedades#obterAreasDisponiveis(List, String)} com um tipo de área inválido,
+     * que deve lançar uma exceção {@link IllegalArgumentException}.
+     */
     @Test
     void testObterAreasDisponiveisTipoInvalido() {
         Exception exception = assertThrows(IllegalArgumentException.class, () ->
@@ -85,7 +116,10 @@ class CalculadoraPropriedadesTest {
         );
         assertEquals("Tipo de área inválido. Use: freguesia, municipio ou ilha.", exception.getMessage());
     }
-
+    /**
+     * Testa o método {@link CalculadoraPropriedades#calcularAreaMedia(List, String, String)} com um tipo de área inválido,
+     * que deve lançar uma exceção {@link IllegalArgumentException}.
+     */
     @Test
     void testCalcularAreaMediaTipoInvalido() {
         Exception exception = assertThrows(IllegalArgumentException.class, () ->
