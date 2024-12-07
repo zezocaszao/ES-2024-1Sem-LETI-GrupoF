@@ -65,7 +65,7 @@ public class CalcularPropriedadesOwnersTest {
         List<DadosPropriedades> propriedades = criarPropriedadesTeste();
 
         List<String> freguesias = CalculadoraPropriedades.obterAreasDisponiveis(propriedades, "freguesia");
-        assertEquals(Arrays.asList("Arco da Calheta", "Ponto do Sol"), freguesias);
+        assertEquals(Arrays.asList("Arco da Calheta", "Ponta do Sol"), freguesias);
 
         List<String> municipios = CalculadoraPropriedades.obterAreasDisponiveis(propriedades, "municipio");
         assertEquals(Arrays.asList("Calheta", "Ponta do Sol"), municipios);
