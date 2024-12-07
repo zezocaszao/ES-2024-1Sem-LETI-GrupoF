@@ -2,7 +2,9 @@ package iscteiul.ista.es20241semletigrupof;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
+/**
+Calcula a area media de uma zona para um determinado proprietario
+ */
 public class CalcularPropriedadesOwners {
 
     /**
@@ -58,11 +60,11 @@ public class CalcularPropriedadesOwners {
                             return false;
                     }
                 })
-                .filter(propriedade -> donoEscolhido != null && propriedade.getOwner() != null && propriedade.getOwner().equals(donoEscolhido))
+                .filter(propriedade -> propriedade.getOwner().equals(donoEscolhido))
                 .collect(Collectors.toList());
 
         if (propriedadesFiltradas.isEmpty()) {
-            return 0; // Ou outro comportamento desejado para o caso de não haver propriedades
+            return 0;
         }
 
         double areaTotal = propriedadesFiltradas.stream()
@@ -101,7 +103,7 @@ public class CalcularPropriedadesOwners {
         System.out.println("Escolha um dono: ");
         String donoEscolhido = scanner.nextLine();
 
-        // Calcular a área média do dono na área escolhida
+
         double areaMedia = calcularAreaMediaPorDono(propriedades, tipoArea, areaEscolhida, donoEscolhido);
         System.out.println("A área média das propriedades do dono " + donoEscolhido + " na área " + areaEscolhida + " é: " + areaMedia);
     }

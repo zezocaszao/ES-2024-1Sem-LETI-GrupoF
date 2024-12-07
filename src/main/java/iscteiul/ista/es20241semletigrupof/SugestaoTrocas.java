@@ -26,7 +26,7 @@ public class SugestaoTrocas {
                                                         String areaEscolhida, GrafoProprietarios grafo) {
         List<TrocaPropriedades> trocasSugeridas = new ArrayList<>();
 
-        // Filtrar propriedades pela área escolhida
+
         List<DadosPropriedades> propriedadesNaArea = new ArrayList<>();
         Set<String> proprietariosNaArea = new HashSet<>();
         for (DadosPropriedades propriedade : propriedades) {
@@ -38,15 +38,15 @@ public class SugestaoTrocas {
             }
         }
 
-        // Iterar pelos proprietários e seus vizinhos com base no grafo
+
         Map<String, Set<String>> adjacencias = grafo.getAdjacencias();
         for (String proprietario1 : proprietariosNaArea) {
-            // Ignorar proprietários que não têm vizinhos
+
             if (!adjacencias.containsKey(proprietario1)) {
                 continue;
             }
 
-            // Obter propriedades do proprietário 1 na área
+
             List<DadosPropriedades> propriedades1 = new ArrayList<>();
             for (DadosPropriedades propriedade : propriedadesNaArea) {
                 if (propriedade.getOwner().equals(proprietario1)) {
@@ -54,14 +54,14 @@ public class SugestaoTrocas {
                 }
             }
 
-            // Iterar sobre os vizinhos do proprietário 1
+
             for (String proprietario2 : adjacencias.get(proprietario1)) {
                 // Verificar se o proprietário 2 está na área escolhida
                 if (!proprietariosNaArea.contains(proprietario2)) {
                     continue;
                 }
 
-                // Obter propriedades do proprietário 2 na área
+
                 List<DadosPropriedades> propriedades2 = new ArrayList<>();
                 for (DadosPropriedades propriedade : propriedadesNaArea) {
                     if (propriedade.getOwner().equals(proprietario2)) {
@@ -69,12 +69,12 @@ public class SugestaoTrocas {
                     }
                 }
 
-                // Avaliar trocas entre as propriedades dos dois proprietários
+
                 for (DadosPropriedades prop1 : propriedades1) {
                     for (DadosPropriedades prop2 : propriedades2) {
                         List<DadosPropriedades> propriedadesSimuladas = new ArrayList<>(propriedadesNaArea);
 
-                        // Simular troca
+
                         propriedadesSimuladas.remove(prop1);
                         propriedadesSimuladas.remove(prop2);
 
