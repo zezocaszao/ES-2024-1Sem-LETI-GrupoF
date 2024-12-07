@@ -12,7 +12,7 @@ module iscteiul.ista.es20241semletigrupof {
     requires com.opencsv;
     requires java.sql;
     requires java.desktop;
-
+    requires org.junit.jupiter.api;
 
     opens iscteiul.ista.es20241semletigrupof to javafx.fxml;
     exports iscteiul.ista.es20241semletigrupof;
