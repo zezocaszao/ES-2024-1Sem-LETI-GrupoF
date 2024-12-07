@@ -1,0 +1,20 @@
+-------------------------------------------------------------------------------
+Test set: iscteiul.ista.es20241semletigrupof.GrafoTest
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 4, Errors: 0, Skipped: 0, Time elapsed: 0.001 sec <<< FAILURE!
+iscteiul.ista.es20241semletigrupof.GrafoTest.testConstruirGrafo()  Time elapsed: 0 sec  <<< FAILURE!
+java.lang.NullPointerException: Cannot invoke "iscteiul.ista.es20241semletigrupof.Grafo.construirGrafo(java.util.List)" because "this.grafo" is null
+	at iscteiul.ista.es20241semletigrupof.GrafoTest.testConstruirGrafo(GrafoTest.java:63)
+
+iscteiul.ista.es20241semletigrupof.GrafoTest.testExibirGrafo()  Time elapsed: 0.001 sec  <<< FAILURE!
+java.lang.NullPointerException: Cannot invoke "iscteiul.ista.es20241semletigrupof.Grafo.adicionarVizinho(int, int)" because "this.grafo" is null
+	at iscteiul.ista.es20241semletigrupof.GrafoTest.testExibirGrafo(GrafoTest.java:73)
+
+iscteiul.ista.es20241semletigrupof.GrafoTest.testCalcularBoundingBox()  Time elapsed: 0 sec  <<< FAILURE!
+java.lang.NullPointerException: Cannot invoke "iscteiul.ista.es20241semletigrupof.Grafo.calcularBoundingBox(String)" because "this.grafo" is null
+	at iscteiul.ista.es20241semletigrupof.GrafoTest.testCalcularBoundingBox(GrafoTest.java:34)
+
+iscteiul.ista.es20241semletigrupof.GrafoTest.testAdicionarVizinho()  Time elapsed: 0 sec  <<< FAILURE!
+java.lang.NullPointerException: Cannot invoke "iscteiul.ista.es20241semletigrupof.Grafo.adicionarVizinho(int, int)" because "this.grafo" is null
+	at iscteiul.ista.es20241semletigrupof.GrafoTest.testAdicionarVizinho(GrafoTest.java:22)
+

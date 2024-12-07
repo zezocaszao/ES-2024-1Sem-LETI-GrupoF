@@ -1,0 +1,14 @@
+-------------------------------------------------------------------------------
+Test set: iscteiul.ista.es20241semletigrupof.CalcularPropriedadesOwnersTest
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.041 sec <<< FAILURE!
+iscteiul.ista.es20241semletigrupof.CalcularPropriedadesOwnersTest.testObterAreasDisponiveis()  Time elapsed: 0.012 sec  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <[Arco da Calheta, Ponto do Sol]> but was: <[Arco da Calheta, Ponta do Sol]>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+	at org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:177)
+	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1145)
+	at iscteiul.ista.es20241semletigrupof.CalcularPropriedadesOwnersTest.testObterAreasDisponiveis(CalcularPropriedadesOwnersTest.java:56)
+

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.layout.VBox?>
+
+<GridPane xmlns:fx="http://javafx.com/fxml" fx:controller="iscteiul.ista.es20241semletigrupof.HelloController"
+          hgap="40" vgap="40" alignment="center">
+    <padding>
+        <Insets top="50" right="50" bottom="50" left="50"/>
+    </padding>
+
+    <!-- Título -->
+    <Text text="Áreas Geográficas" style="-fx-font-size: 40px; -fx-font-weight: bold;" GridPane.columnSpan="2" GridPane.halignment="center"/>
+
+    <!-- Botões para os exercícios -->
+    <Button text="Exercício 1" onAction="#onExercicio1Click" GridPane.rowIndex="1" GridPane.columnIndex="0"
+            style="-fx-pref-width: 250px; -fx-pref-height: 80px;"/>
+    <Button text="Exercício 2" onAction="#onExercicio2Click" GridPane.rowIndex="1" GridPane.columnIndex="1"
+            style="-fx-pref-width: 250px; -fx-pref-height: 80px;"/>
+    <Button text="Exercício 3" onAction="#onExercicio3Click" GridPane.rowIndex="2" GridPane.columnIndex="0"
+            style="-fx-pref-width: 250px; -fx-pref-height: 80px;"/>
+    <Button text="Exercício 4" onAction="#onExercicio4Click" GridPane.rowIndex="2" GridPane.columnIndex="1"
+            style="-fx-pref-width: 250px; -fx-pref-height: 80px;"/>
+    <Button text="Exercício 5" onAction="#onExercicio5Click" GridPane.rowIndex="3" GridPane.columnIndex="0"
+            style="-fx-pref-width: 250px; -fx-pref-height: 80px;"/>
+    <Button text="Exercício 6" onAction="#onExercicio6Click" GridPane.rowIndex="3" GridPane.columnIndex="1"
+            style="-fx-pref-width: 250px; -fx-pref-height: 80px;"/>
+    <Button text="Carregar CSV" onAction="#onCarregarCSVClick" GridPane.rowIndex="5" GridPane.columnSpan="2"
+            style="-fx-pref-width: 350px; -fx-pref-height: 80px; -fx-font-size: 22px; -fx-background-color: #4CAF50; -fx-text-fill: white;"/>
+
+    <!-- Label para mostrar o nome do arquivo carregado -->
+    <Label fx:id="nomeArquivoLabel" style="-fx-font-size: 16px; -fx-text-fill: #000000;" GridPane.rowIndex="6" GridPane.columnSpan="2" GridPane.halignment="center"/>
+
+    <!-- Área dinâmica -->
+    <VBox fx:id="container" GridPane.rowIndex="4" GridPane.columnSpan="2" alignment="top_center" spacing="10">
+        <!-- O conteúdo dinâmico será adicionado aqui -->
+    </VBox>
+</GridPane>
