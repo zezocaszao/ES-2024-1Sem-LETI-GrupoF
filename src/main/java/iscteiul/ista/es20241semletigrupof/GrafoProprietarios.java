@@ -34,6 +34,7 @@ public class GrafoProprietarios {
         adjacencias.computeIfAbsent(owner2, k -> new HashSet<>()).add(owner1);
     }
 
+
     /**
      * Retorna o mapa de adjacências que representa os vizinhos de cada proprietário.
      *
@@ -41,6 +42,44 @@ public class GrafoProprietarios {
     public Map<String, Set<String>> getAdjacencias() {
         return adjacencias;
     }
+
+    public BoundingBox calcularBoundingBox(String geometry) {
+        double minX = Double.MAX_VALUE, minY = Double.MAX_VALUE;
+        double maxX = Double.MIN_VALUE, maxY = Double.MIN_VALUE;
+
+        if (geometry == null || geometry.isEmpty() || geometry.contains("EMPTY") || !geometry.startsWith("MULTIPOLYGON")) {
+            return new BoundingBox(0, 0, 0, 0); // Retorna uma bounding box nula
+        }
+        try {
+            String coordenadas = geometry.replace("MULTIPOLYGON", "")
+                    .replace("(", "")
+                    .replace(")", "")
+                    .trim();
+
+            String[] pares = coordenadas.split(",");
+            for (String par : pares) {
+                String[] ponto = par.trim().split(" ");
+                if (ponto.length == 2) {
+                    double x = Double.parseDouble(ponto[0]);
+                    double y = Double.parseDouble(ponto[1]);
+
+                    minX = Math.min(minX, x);
+                    minY = Math.min(minY, y);
+                    maxX = Math.max(maxX, x);
+                    maxY = Math.max(maxY, y);
+                } else {
+                    System.err.println("Par inválido ignorado: " + par);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao processar a geometria: " + e.getMessage());
+            return new BoundingBox(0, 0, 0, 0);
+        }
+
+        return new BoundingBox(minX, minY, maxX - minX, maxY - minY);
+    }
+
+
 
     /**
      * Constrói o grafo de proprietários a partir de uma lista de propriedades.

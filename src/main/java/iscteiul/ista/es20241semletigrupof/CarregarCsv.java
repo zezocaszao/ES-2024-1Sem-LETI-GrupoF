@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
 
-/* Lê um ficheiro csv dado por um utilizador
+/** Lê um ficheiro csv dado por um utilizador
 *
  */
 public class CarregarCsv {

@@ -533,22 +533,19 @@ public class HelloController {
         List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(arquivoCSV.getAbsolutePath());
 
 
-        TextInputDialog tipoDialog = new TextInputDialog();
+        List<String> tiposArea = List.of("freguesia", "municipio", "ilha");
+        ChoiceDialog<String> tipoDialog = new ChoiceDialog<>(tiposArea.get(0), tiposArea);
         tipoDialog.setTitle("Seleção de Tipo de Área");
-        tipoDialog.setHeaderText("Digite o tipo de área geográfica (freguesia, municipio, ilha):");
+        tipoDialog.setHeaderText("Selecione o tipo de área geográfica:");
         tipoDialog.setContentText("Tipo de área:");
         Optional<String> tipoAreaOpt = tipoDialog.showAndWait();
 
-        if (!tipoAreaOpt.isPresent() || tipoAreaOpt.get().trim().isEmpty()) {
+        if (!tipoAreaOpt.isPresent()) {
             showAlert("Erro", "O tipo de área geográfica é obrigatório.");
             return;
         }
 
         String tipoArea = tipoAreaOpt.get().trim().toLowerCase();
-        if (!List.of("freguesia", "municipio", "ilha").contains(tipoArea)) {
-            showAlert("Erro", "Tipo de área inválido. Use: freguesia, municipio ou ilha.");
-            return;
-        }
 
 
         List<String> areasDisponiveis = CalculadoraPropriedades.obterAreasDisponiveis(propriedades, tipoArea);
@@ -558,27 +555,13 @@ public class HelloController {
         }
 
 
-        StringBuilder areasTexto = new StringBuilder("Áreas disponíveis:\n");
-        for (String area : areasDisponiveis) {
-            areasTexto.append("- ").append(area).append("\n");
-        }
-
-        TextArea areasDisponiveisArea = new TextArea(areasTexto.toString());
-        areasDisponiveisArea.setEditable(false);
-        Alert areasDialog = new Alert(Alert.AlertType.INFORMATION);
-        areasDialog.setTitle("Áreas Disponíveis");
-        areasDialog.setHeaderText("Selecione uma área a partir da lista abaixo:");
-        areasDialog.getDialogPane().setContent(areasDisponiveisArea);
-        areasDialog.showAndWait();
-
-
-        TextInputDialog valorDialog = new TextInputDialog();
+        ChoiceDialog<String> valorDialog = new ChoiceDialog<>(areasDisponiveis.get(0), areasDisponiveis);
         valorDialog.setTitle("Seleção de Valor da Área");
-        valorDialog.setHeaderText("Digite o valor da área geográfica (ex.: 'Arco da Calheta' ou 'Calheta'):");
+        valorDialog.setHeaderText("Selecione o valor da área geográfica:");
         valorDialog.setContentText("Valor da área:");
         Optional<String> valorAreaOpt = valorDialog.showAndWait();
 
-        if (!valorAreaOpt.isPresent() || valorAreaOpt.get().trim().isEmpty()) {
+        if (!valorAreaOpt.isPresent()) {
             showAlert("Erro", "O valor da área é obrigatório.");
             return;
         }
@@ -589,10 +572,10 @@ public class HelloController {
         GrafoProprietarios grafo = new GrafoProprietarios();
         grafo.construirGrafoProprietarios(propriedades);
 
-        // Chamar o método para sugerir trocas de propriedades
+
         List<TrocaPropriedades> trocas = SugestaoTrocas.sugerirTrocas(propriedades, tipoArea, areaEscolhida, grafo);
 
-        // Exibir os resultados
+
         StringBuilder resultadoTexto = new StringBuilder("Sugestões de Troca:\n");
         if (trocas.isEmpty()) {
             resultadoTexto.append("Nenhuma troca sugerida.");
@@ -606,7 +589,6 @@ public class HelloController {
                         .append("Potencialidade de troca: ").append(troca.getPotencialidadeTroca()).append("\n\n");
             }
         }
-
 
         TextArea resultadoArea = new TextArea(resultadoTexto.toString());
         resultadoArea.setEditable(false);
