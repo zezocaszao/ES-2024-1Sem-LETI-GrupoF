@@ -56,7 +56,7 @@ public class SugestaoTrocas {
 
 
             for (String proprietario2 : adjacencias.get(proprietario1)) {
-                // Verificar se o proprietário 2 está na área escolhida
+
                 if (!proprietariosNaArea.contains(proprietario2)) {
                     continue;
                 }
@@ -91,7 +91,7 @@ public class SugestaoTrocas {
                         propriedadesSimuladas.add(prop1Trocada);
                         propriedadesSimuladas.add(prop2Trocada);
 
-                        // Calcular melhoria
+
                         double areaMediaAntes1 = CalcularPropriedadesOwners.calcularAreaMediaPorDono(propriedadesNaArea, tipoArea, areaEscolhida, proprietario1);
                         double areaMediaAntes2 = CalcularPropriedadesOwners.calcularAreaMediaPorDono(propriedadesNaArea, tipoArea, areaEscolhida, proprietario2);
                         double areaMediaDepois1 = CalcularPropriedadesOwners.calcularAreaMediaPorDono(propriedadesSimuladas, tipoArea, areaEscolhida, proprietario1);

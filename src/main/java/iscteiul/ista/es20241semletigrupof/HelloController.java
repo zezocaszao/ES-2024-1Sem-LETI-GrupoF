@@ -288,7 +288,7 @@ public class HelloController {
 
             double areaMedia = CalculadoraPropriedades.calcularAreaMedia(propriedades, tipoArea, areaEscolhida);
 
-            // Exibir o resultado da área média
+
             if (areaMedia == -1) {
                 showAlert("Resultado", "Nenhuma propriedade encontrada para a área especificada: " + areaEscolhida + " (" + tipoArea + ").");
             } else {
@@ -307,7 +307,7 @@ public class HelloController {
     @FXML
     protected void onExercicio4Click() {
         try {
-            // Verifica se um arquivo CSV foi carregado
+
             if (arquivoCSV == null) {
                 showAlert("Erro", "Nenhum arquivo CSV foi carregado.");
                 return;
@@ -417,7 +417,7 @@ public class HelloController {
             Pane pane = new Pane();
             Map<String, Circle> nos = new HashMap<>();
 
-            // Ajustar a posição dos nós
+
             double xInicio = 100;
             double yInicio = 100;
             double distanciaHorizontal = 200;

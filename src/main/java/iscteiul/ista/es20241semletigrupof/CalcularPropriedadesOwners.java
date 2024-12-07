@@ -83,11 +83,11 @@ public class CalcularPropriedadesOwners {
     public static void exibirAreaMediaPorDono(List<DadosPropriedades> propriedades) {
         Scanner scanner = new Scanner(System.in);
 
-        // Escolher o tipo de área
+
         System.out.println("Escolha o tipo de área (freguesia, municipio, ilha): ");
         String tipoArea = scanner.nextLine();
 
-        // Obter as áreas disponíveis
+
         List<String> areasDisponiveis = CalculadoraPropriedades.obterAreasDisponiveis(propriedades, tipoArea);
         System.out.println("Áreas disponíveis: ");
         areasDisponiveis.forEach(System.out::println);
@@ -95,7 +95,7 @@ public class CalcularPropriedadesOwners {
         System.out.println("Escolha uma área: ");
         String areaEscolhida = scanner.nextLine();
 
-        // Obter os donos disponíveis na área escolhida
+
         List<String> donosDisponiveis = obterDonosPorArea(propriedades, tipoArea, areaEscolhida);
         System.out.println("Donos disponíveis: ");
         donosDisponiveis.forEach(System.out::println);
