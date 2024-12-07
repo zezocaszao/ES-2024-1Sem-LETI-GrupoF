@@ -7,24 +7,30 @@
 
 <?import javafx.scene.layout.VBox?>
 <GridPane xmlns:fx="http://javafx.com/fxml" fx:controller="iscteiul.ista.es20241semletigrupof.HelloController"
-          hgap="20" vgap="20" alignment="center">
+          hgap="40" vgap="40" alignment="center">
     <padding>
-        <Insets top="100" right="80" bottom="80" left="80"/>
+        <Insets top="50" right="50" bottom="50" left="50"/>
     </padding>
 
     <!-- Título -->
-    <Text text="Áreas Geográficas" style="-fx-font-size: 200px;" GridPane.columnSpan="4" GridPane.halignment="center"/>
+    <Text text="Áreas Geográficas" style="-fx-font-size: 40px; -fx-font-weight: bold;" GridPane.columnSpan="2" GridPane.halignment="center"/>
 
     <!-- Botões para os exercícios -->
-    <Button text="Exercício 1" onAction="#onExercicio1Click" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-    <Button text="Exercício 2" onAction="#onExercicio2Click" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-    <Button text="Exercício 3" onAction="#onExercicio3Click" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-    <Button text="Exercício 4" onAction="#onExercicio4Click" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-    <Button text="Exercício 5" onAction="#onExercicio5Click" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-    <Button text="Exercício 6" onAction="#onExercicio6Click" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+    <Button text="Exercício 1" onAction="#onExercicio1Click" GridPane.rowIndex="1" GridPane.columnIndex="0"
+            style="-fx-pref-width: 200px; -fx-pref-height: 60px;"/>
+    <Button text="Exercício 2" onAction="#onExercicio2Click" GridPane.rowIndex="1" GridPane.columnIndex="1"
+            style="-fx-pref-width: 200px; -fx-pref-height: 60px;"/>
+    <Button text="Exercício 3" onAction="#onExercicio3Click" GridPane.rowIndex="2" GridPane.columnIndex="0"
+            style="-fx-pref-width: 200px; -fx-pref-height: 60px;"/>
+    <Button text="Exercício 4" onAction="#onExercicio4Click" GridPane.rowIndex="2" GridPane.columnIndex="1"
+            style="-fx-pref-width: 200px; -fx-pref-height: 60px;"/>
+    <Button text="Exercício 5" onAction="#onExercicio5Click" GridPane.rowIndex="3" GridPane.columnIndex="0"
+            style="-fx-pref-width: 200px; -fx-pref-height: 60px;"/>
+    <Button text="Exercício 6" onAction="#onExercicio6Click" GridPane.rowIndex="3" GridPane.columnIndex="1"
+            style="-fx-pref-width: 200px; -fx-pref-height: 60px;"/>
 
     <!-- Área dinâmica -->
-    <VBox fx:id="container" GridPane.rowIndex="6" GridPane.columnSpan="4" alignment="top_center" spacing="10">
+    <VBox fx:id="container" GridPane.rowIndex="4" GridPane.columnSpan="2" alignment="top_center" spacing="10">
         <!-- O conteúdo dinâmico será adicionado aqui -->
     </VBox>
 </GridPane>

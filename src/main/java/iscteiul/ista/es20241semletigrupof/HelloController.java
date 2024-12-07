@@ -26,7 +26,9 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
-
+/**
+Relaciona todas as funcionalidades com a respetiva interface gráfica
+ */
 public class HelloController {
 
 
@@ -44,73 +46,74 @@ public class HelloController {
     @FXML
     private ChoiceBox<String> tipoAreaChoiceBox;
 
-    // Variáveis para armazenar a posição do mouse
-    private double mouseX = 0;
-    private double mouseY = 0;
-
+/**Implementação do carregamento do ficheiro associado à interface gráfica
+*
+ */
     public void onCarregarCSVClick() {
 
 
-        // Cria uma instância do FileChooser
+
         FileChooser fileChooser = new FileChooser();
 
-        // Filtra os tipos de ficheiros para mostrar apenas CSV
+
         FileChooser.ExtensionFilter filtroCSV = new FileChooser.ExtensionFilter("CSV Files", "*.csv");
         fileChooser.getExtensionFilters().add(filtroCSV);
 
-        // Mostra a caixa de diálogo para o usuário escolher o arquivo
+
         Stage stage = new Stage();
         File arquivoSelecionado = fileChooser.showOpenDialog(stage);
 
-        // Se um arquivo foi selecionado
+
         if (arquivoSelecionado != null) {
-            // Armazena o arquivo
+
             arquivoCSV = arquivoSelecionado;
 
-            // Atualiza o texto do Label para mostrar o nome do arquivo selecionado
+
             nomeArquivoLabel.setText(arquivoSelecionado.getName());
         } else {
-            // Caso nenhum arquivo seja selecionado, reseta o nome do arquivo
+
             nomeArquivoLabel.setText("Nenhum arquivo selecionado");
         }
     }
-
+    /**Implementação do ponto face à interface gráfica
+     *
+     */
     @FXML
     protected void onExercicio1Click() {
         try {
-            // Verifica se um arquivo foi carregado
+
             if (arquivoCSV == null) {
                 showAlert("Erro", "Nenhum arquivo CSV foi carregado.");
                 return;
             }
 
-            // Carregar os dados do CSV
+
             List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(arquivoCSV.getAbsolutePath());
 
-            // Criar um TextArea para exibir os dados
+
             TextArea textArea = new TextArea();
             textArea.setEditable(false);
             textArea.setPrefHeight(600);
             textArea.setPrefWidth(800);
 
-            // Construir o texto a partir das propriedades
+
             StringBuilder stringBuilder = new StringBuilder();
             for (DadosPropriedades propriedade : propriedades) {
                 stringBuilder.append(propriedade.toString()).append("\n");
             }
             textArea.setText(stringBuilder.toString());
 
-            // Criar uma nova janela
+
             Stage novaJanela = new Stage();
             novaJanela.setTitle("Exercício 1 - Dados Carregados");
 
-            // Adicionar o TextArea a um Scene e exibir na nova janela
+
             VBox root = new VBox(textArea);
             root.setPadding(new Insets(10));
             Scene scene = new Scene(root, 850, 650);
             novaJanela.setScene(scene);
 
-            // Exibir a nova janela
+
             novaJanela.show();
 
         } catch (Exception e) {
@@ -118,83 +121,83 @@ public class HelloController {
         }
     }
 
-
+    /**Implementação gráfica do grafo que tem as propriedades como nós
+     * e as adjacências como arestas
+     */
     @FXML
     protected void onExercicio2Click() {
         try {
-            // Carregar as propriedades a partir do arquivo CSV
-            //String caminhoCsv = "src/main/resources/iscteiul/ista/es20241semletigrupof/Madeira-Moodle-1.1.csv";
-           // List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(caminhoCsv);
+
             List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(arquivoCSV.getAbsolutePath());
 
 
-            // Criar o grafo
-            Grafo grafo = new Grafo();
-            grafo.construirGrafo(propriedades); // Construir o grafo com as vizinhanças
 
-            // Criar um painel para desenhar
+            Grafo grafo = new Grafo();
+            grafo.construirGrafo(propriedades);
+
+
             Pane pane = new Pane();
-            Map<Integer, Circle> nos = new HashMap<>(); // Armazenar os círculos que representam as propriedades
+            Map<Integer, Circle> nos = new HashMap<>();
 
             // Ajustar a posição dos nós
-            double xInicio = 100; // Posição inicial horizontal para os nós azuis
-            double yInicio = 100; // Posição inicial vertical para os nós azuis
-            double distanciaHorizontal = 200; // Distância horizontal entre os nós azuis (apenas um por linha)
-            double distanciaVertical = 200;   // Distância vertical entre as linhas de nós azuis
+            double xInicio = 100;
+            double yInicio = 100;
+            double distanciaHorizontal = 200;
+            double distanciaVertical = 200;
 
-            // Variável para controlar a linha dos nós azuis
+
             int linhaAzul = 0;
 
-            double maxX = 0;  // Para controlar o tamanho máximo em X (largura)
-            double maxY = 0;  // Para controlar o tamanho máximo em Y (altura)
+            double maxX = 0;
+            double maxY = 0;
 
-            // Para cada conjunto de vizinhos, desenhar os nós e conexões
+
             for (Map.Entry<Integer, Set<Integer>> entry : grafo.getAdjacencias().entrySet()) {
                 Integer idPropriedade = entry.getKey();
                 Set<Integer> vizinhos = entry.getValue();
 
-                // Ajustar a posição do nó azul em sua linha
-                double xPos = xInicio;  // Um único nó azul por linha, então a posição horizontal é fixa
-                double yPos = yInicio + linhaAzul * distanciaVertical; // Cada linha vai para baixo
 
-                // Criar um círculo para o nó azul (propriedade)
+                double xPos = xInicio;
+                double yPos = yInicio + linhaAzul * distanciaVertical;
+
+
                 Circle circulo = new Circle(20);
                 circulo.setFill(Color.BLUE);
                 circulo.setStroke(Color.BLACK);
                 circulo.setCenterX(xPos);
                 circulo.setCenterY(yPos);
 
-                // Adicionar o texto com o identificador da propriedade
+
                 Text texto = new Text(String.valueOf(idPropriedade));
                 texto.setX(circulo.getCenterX() - 10);
                 texto.setY(circulo.getCenterY() + 5);
 
-                // Adicionar o nó azul (propriedade) ao painel
+
                 pane.getChildren().addAll(circulo, texto);
                 nos.put(idPropriedade, circulo);
 
-                // Desenhar as conexões (linhas) para os vizinhos (nós verdes)
-                int offset = 1; // Para controlar a disposição dos vizinhos ao longo de uma linha
+
+                int offset = 1;
                 for (Integer vizinhoId : vizinhos) {
-                    // Criar um círculo para o vizinho (nó verde)
+
                     Circle circuloVizinho = new Circle(20);
                     circuloVizinho.setFill(Color.GREEN);
                     circuloVizinho.setStroke(Color.BLACK);
 
-                    // Posicionar o vizinho ligeiramente abaixo do nó azul
-                    circuloVizinho.setCenterX(xPos + offset * distanciaHorizontal); // Ajuste horizontal dos vizinhos
-                    circuloVizinho.setCenterY(yPos + distanciaVertical);            // Ajuste vertical dos vizinhos
 
-                    // Adicionar o texto para o vizinho
+                    circuloVizinho.setCenterX(xPos + offset * distanciaHorizontal);
+                    circuloVizinho.setCenterY(yPos + distanciaVertical);
+
+
                     Text textoVizinho = new Text(String.valueOf(vizinhoId));
                     textoVizinho.setX(circuloVizinho.getCenterX() - 10);
                     textoVizinho.setY(circuloVizinho.getCenterY() + 5);
 
-                    // Adicionar o vizinho ao painel
+
                     pane.getChildren().addAll(circuloVizinho, textoVizinho);
                     nos.put(vizinhoId, circuloVizinho);
 
-                    // Desenhar a linha conectando o nó azul ao vizinho (nó verde)
+
                     Line linha = new Line();
                     linha.setStartX(circulo.getCenterX());
                     linha.setStartY(circulo.getCenterY());
@@ -202,33 +205,33 @@ public class HelloController {
                     linha.setEndY(circuloVizinho.getCenterY());
                     linha.setStroke(Color.BLACK);
 
-                    // Adicionar a linha ao painel
+
                     pane.getChildren().add(linha);
 
-                    offset++; // Incrementa para posicionar o próximo vizinho em uma posição à direita
+                    offset++;
                 }
-                // Atualizar os limites máximos do painel
+
                 maxX = Math.max(maxX, xPos + distanciaHorizontal * offset);
                 maxY = Math.max(maxY, yPos + distanciaVertical);
-                linhaAzul++; // Incrementar para a próxima linha de nós azuis
+                linhaAzul++;
             }
-            // Ajustar o tamanho preferido do painel com base no conteúdo
-            pane.setMinSize(maxX + 100, maxY + 100);  // Ajuste automático baseado no conteúdo
-            pane.setPrefSize(maxX + 100, maxY + 100);  // Adicionar margens para o conteúdo
 
-            // Criar um ScrollPane para permitir o scroll dentro do painel
+            pane.setMinSize(maxX + 100, maxY + 100);
+            pane.setPrefSize(maxX + 100, maxY + 100);
+
+
             ScrollPane scrollPane = new ScrollPane(pane);
-            scrollPane.setFitToHeight(true); // Ajustar automaticamente à altura
-            scrollPane.setFitToWidth(true);  // Ajustar automaticamente à largura
-            scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS); // Sempre mostrar barra de rolagem vertical
+            scrollPane.setFitToHeight(true);
+            scrollPane.setFitToWidth(true);
+            scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
 
-            // Criar uma nova janela (Stage) para exibir o conteúdo
+
             Stage novaJanela = new Stage();
             novaJanela.setTitle("Exibição do GrafoProprietarios");
             Scene novaCena = new Scene(scrollPane, 800, 600);
             novaJanela.setScene(novaCena);
 
-            // Mostrar a nova janela
+
             novaJanela.show();
 
         } catch (Exception e) {
@@ -238,15 +241,17 @@ public class HelloController {
     }
 
 
-
+    /**Implementação gráfica do ponto 3
+    *
+     */
 
     @FXML
     protected void onExercicio3Click() {
         try {
-            // Carregar as propriedades a partir do arquivo CSV
+
             List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(arquivoCSV.getAbsolutePath());
 
-            // Exibir diálogo para o tipo de área (usando ChoiceDialog)
+
             List<String> tiposArea = List.of("freguesia", "municipio", "ilha");
             ChoiceDialog<String> tipoDialog = new ChoiceDialog<>(tiposArea.get(0), tiposArea);
             tipoDialog.setTitle("Seleção de Tipo de Área");
@@ -266,7 +271,7 @@ public class HelloController {
                 return;
             }
 
-            // Exibir lista de áreas para o utilizador escolher (usando ChoiceDialog)
+
             ChoiceDialog<String> areaDialog = new ChoiceDialog<>(areasDisponiveis.get(0), areasDisponiveis);
             areaDialog.setTitle("Escolha a Área");
             areaDialog.setHeaderText("Escolha uma área de " + tipoArea);
@@ -280,7 +285,7 @@ public class HelloController {
 
             String areaEscolhida = areaEscolhidaOpt.get();
 
-            // Calcular a área média das propriedades na área escolhida
+
             double areaMedia = CalculadoraPropriedades.calcularAreaMedia(propriedades, tipoArea, areaEscolhida);
 
             // Exibir o resultado da área média
@@ -296,7 +301,9 @@ public class HelloController {
         }
     }
 
-
+    /**Implementação gráfica do ponto 4
+     *
+     */
     @FXML
     protected void onExercicio4Click() {
         try {
@@ -308,7 +315,7 @@ public class HelloController {
 
             List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(arquivoCSV.getAbsolutePath());
 
-            // Exibir diálogo para o tipo de área (usando ChoiceDialog)
+
             List<String> tiposArea = List.of("freguesia", "municipio", "ilha");
             ChoiceDialog<String> tipoDialog = new ChoiceDialog<>(tiposArea.get(0), tiposArea);
             tipoDialog.setTitle("Seleção de Tipo de Área");
@@ -327,14 +334,14 @@ public class HelloController {
                 return;
             }
 
-            // Obter as áreas disponíveis
+
             List<String> areasDisponiveis = CalculadoraPropriedades.obterAreasDisponiveis(propriedades, tipoArea);
             if (areasDisponiveis.isEmpty()) {
                 showAlert("Erro", "Não há áreas disponíveis para o tipo especificado: " + tipoArea);
                 return;
             }
 
-            // Exibir lista de áreas para o utilizador escolher
+
             ChoiceDialog<String> areaDialog = new ChoiceDialog<>(areasDisponiveis.get(0), areasDisponiveis);
             areaDialog.setTitle("Escolha a Área");
             areaDialog.setHeaderText("Escolha uma área de " + tipoArea);
@@ -348,19 +355,19 @@ public class HelloController {
 
             String areaEscolhida = areaEscolhidaOpt.get();
 
-            // Obter os donos disponíveis na área escolhida e ordená-los
+
             List<String> donosDisponiveis = CalcularPropriedadesOwners.obterDonosPorArea(propriedades, tipoArea, areaEscolhida);
             if (donosDisponiveis.isEmpty()) {
                 showAlert("Erro", "Não há donos disponíveis na área " + areaEscolhida);
                 return;
             }
 
-            // Ordenar os donos alfabeticamente
+
             donosDisponiveis = donosDisponiveis.stream()
                     .sorted()
                     .collect(Collectors.toList());
 
-            // Exibir lista de donos para o utilizador escolher
+
             ChoiceDialog<String> donoDialog = new ChoiceDialog<>(donosDisponiveis.get(0), donosDisponiveis);
             donoDialog.setTitle("Escolha o Dono");
             donoDialog.setHeaderText("Escolha o dono da área " + areaEscolhida);
@@ -374,10 +381,10 @@ public class HelloController {
 
             String donoEscolhido = donoEscolhidoOpt.get();
 
-            // Calcular a área média das propriedades do dono na área escolhida
+
             double areaMedia = CalcularPropriedadesOwners.calcularAreaMediaPorDono(propriedades, tipoArea, areaEscolhida, donoEscolhido);
 
-            // Exibir o resultado da área média
+
             if (areaMedia == -1) {
                 showAlert("Resultado", "Nenhuma propriedade encontrada para o dono " + donoEscolhido + " na área " + areaEscolhida + ".");
             } else {
@@ -391,81 +398,84 @@ public class HelloController {
     }
 
 
-
+    /** Implementação gráfica do grafo pedido no ponto 5 que
+     * devolve um grafo onde os nós são os proprietários e as arestas
+     * são a relação de vizinhança com outros proprietários
+     */
 
     @FXML
     protected void onExercicio5Click() {
         try {
-            // Carregar as propriedades a partir do arquivo CSV
+
             List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(arquivoCSV.getAbsolutePath());
 
-            // Criar o grafo
-            GrafoProprietarios grafo = new GrafoProprietarios();
-            grafo.construirGrafoProprietarios(propriedades); // Construir o grafo com as vizinhanças
 
-            // Criar um painel para desenhar
+            GrafoProprietarios grafo = new GrafoProprietarios();
+            grafo.construirGrafoProprietarios(propriedades);
+
+
             Pane pane = new Pane();
-            Map<String, Circle> nos = new HashMap<>(); // Mapear os donos aos círculos criados
+            Map<String, Circle> nos = new HashMap<>();
 
             // Ajustar a posição dos nós
-            double xInicio = 100; // Posição inicial horizontal para os nós azuis
-            double yInicio = 100; // Posição inicial vertical para os nós azuis
-            double distanciaHorizontal = 200; // Distância horizontal entre os nós azuis
-            double distanciaVertical = 200;   // Distância vertical entre as linhas de nós azuis
+            double xInicio = 100;
+            double yInicio = 100;
+            double distanciaHorizontal = 200;
+            double distanciaVertical = 200;
 
-            // Variável para controlar a linha dos nós azuis
+
             int linhaAzul = 0;
 
-            double maxX = 0;  // Para controlar o tamanho máximo em X (largura)
-            double maxY = 0;  // Para controlar o tamanho máximo em Y (altura)
+            double maxX = 0;
+            double maxY = 0;
 
-            // Para cada conjunto de vizinhos, desenhar os nós e conexões
+
             for (Map.Entry<String, Set<String>> entry : grafo.getAdjacencias().entrySet()) {
-                String dono = entry.getKey();  // O dono é uma String
+                String dono = entry.getKey();
                 Set<String> vizinhos = entry.getValue();
 
-                // Ajustar a posição do nó azul em sua linha
+
                 double xPos = xInicio;
                 double yPos = yInicio + linhaAzul * distanciaVertical;
 
-                // Criar um círculo para o nó azul (dono da propriedade)
+
                 Circle circulo = new Circle(20);
                 circulo.setFill(Color.BLUE);
                 circulo.setStroke(Color.BLACK);
                 circulo.setCenterX(xPos);
                 circulo.setCenterY(yPos);
 
-                // Adicionar o texto com o nome do dono
+
                 Text texto = new Text(dono);
                 texto.setX(circulo.getCenterX() - 10);
                 texto.setY(circulo.getCenterY() + 5);
 
-                // Adicionar o nó azul (dono) ao painel
+
                 pane.getChildren().addAll(circulo, texto);
                 nos.put(dono, circulo);
 
-                // Desenhar as conexões (linhas) para os vizinhos
-                int offset = 1; // Para posicionar os vizinhos na linha
+
+                int offset = 1;
                 for (String vizinho : vizinhos) {
-                    // Criar um círculo para o vizinho (nó verde)
+
                     Circle circuloVizinho = new Circle(20);
                     circuloVizinho.setFill(Color.GREEN);
                     circuloVizinho.setStroke(Color.BLACK);
 
-                    // Posicionar o vizinho ligeiramente abaixo do nó azul
+
                     circuloVizinho.setCenterX(xPos + offset * distanciaHorizontal);
                     circuloVizinho.setCenterY(yPos + distanciaVertical);
 
-                    // Adicionar o texto para o vizinho
+
                     Text textoVizinho = new Text(vizinho);
                     textoVizinho.setX(circuloVizinho.getCenterX() - 10);
                     textoVizinho.setY(circuloVizinho.getCenterY() + 5);
 
-                    // Adicionar o vizinho ao painel
+
                     pane.getChildren().addAll(circuloVizinho, textoVizinho);
                     nos.put(vizinho, circuloVizinho);
 
-                    // Desenhar a linha conectando o nó azul ao vizinho (nó verde)
+
                     Line linha = new Line();
                     linha.setStartX(circulo.getCenterX());
                     linha.setStartY(circulo.getCenterY());
@@ -473,35 +483,35 @@ public class HelloController {
                     linha.setEndY(circuloVizinho.getCenterY());
                     linha.setStroke(Color.BLACK);
 
-                    // Adicionar a linha ao painel
+
                     pane.getChildren().add(linha);
 
-                    offset++; // Incrementa para posicionar o próximo vizinho
+                    offset++;
                 }
 
-                // Atualizar os limites máximos do painel
+
                 maxX = Math.max(maxX, xPos + distanciaHorizontal * offset);
                 maxY = Math.max(maxY, yPos + distanciaVertical);
-                linhaAzul = linhaAzul+2; // Incrementar para a próxima linha de nós azuis
+                linhaAzul = linhaAzul+2;
             }
 
-            // Ajustar o tamanho preferido do painel com base no conteúdo
+
             pane.setMinSize(maxX + 100, maxY + 100);
             pane.setPrefSize(maxX + 100, maxY + 100);
 
-            // Criar um ScrollPane para permitir o scroll dentro do painel
+
             ScrollPane scrollPane = new ScrollPane(pane);
             scrollPane.setFitToHeight(true);
             scrollPane.setFitToWidth(true);
             scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
 
-            // Criar uma nova janela (Stage) para exibir o conteúdo
+
             Stage novaJanela = new Stage();
             novaJanela.setTitle("Exibição do Grafo de Proprietários");
             Scene novaCena = new Scene(scrollPane, 800, 600);
             novaJanela.setScene(novaCena);
 
-            // Mostrar a nova janela
+
             novaJanela.show();
 
         } catch (Exception e) {
@@ -510,15 +520,19 @@ public class HelloController {
         }
     }
 
+    /** Implementação gráfica do ponto 6 que consiste em sugestoes de troca
+    * entre propriedades
+     */
+
     @FXML
     public void onExercicio6Click(ActionEvent event) throws Exception {
         Stage newStage = new Stage();
         newStage.setTitle("Sugestão de Trocas");
 
-        // Carregar as propriedades do CSV
+
         List<DadosPropriedades> propriedades = CarregarCsv.carregarPropriedades(arquivoCSV.getAbsolutePath());
 
-        // Dialog para selecionar o tipo de área geográfica
+
         TextInputDialog tipoDialog = new TextInputDialog();
         tipoDialog.setTitle("Seleção de Tipo de Área");
         tipoDialog.setHeaderText("Digite o tipo de área geográfica (freguesia, municipio, ilha):");
@@ -536,14 +550,14 @@ public class HelloController {
             return;
         }
 
-        // Obter as áreas disponíveis
+
         List<String> areasDisponiveis = CalculadoraPropriedades.obterAreasDisponiveis(propriedades, tipoArea);
         if (areasDisponiveis.isEmpty()) {
             showAlert("Erro", "Não há áreas disponíveis para o tipo especificado: " + tipoArea);
             return;
         }
 
-        // Exibir as áreas disponíveis
+
         StringBuilder areasTexto = new StringBuilder("Áreas disponíveis:\n");
         for (String area : areasDisponiveis) {
             areasTexto.append("- ").append(area).append("\n");
@@ -557,7 +571,7 @@ public class HelloController {
         areasDialog.getDialogPane().setContent(areasDisponiveisArea);
         areasDialog.showAndWait();
 
-        // Dialog para escolher uma área específica
+
         TextInputDialog valorDialog = new TextInputDialog();
         valorDialog.setTitle("Seleção de Valor da Área");
         valorDialog.setHeaderText("Digite o valor da área geográfica (ex.: 'Arco da Calheta' ou 'Calheta'):");
@@ -571,8 +585,8 @@ public class HelloController {
 
         String areaEscolhida = valorAreaOpt.get().trim();
 
-        // Criar o grafo de proprietários (aqui é necessário que você tenha a implementação do grafo)
-        GrafoProprietarios grafo = new GrafoProprietarios(); // Isso pode ser um grafo carregado de alguma forma
+
+        GrafoProprietarios grafo = new GrafoProprietarios();
         grafo.construirGrafoProprietarios(propriedades);
 
         // Chamar o método para sugerir trocas de propriedades
@@ -593,7 +607,7 @@ public class HelloController {
             }
         }
 
-        // Mostrar as sugestões de troca
+
         TextArea resultadoArea = new TextArea(resultadoTexto.toString());
         resultadoArea.setEditable(false);
         StackPane newRoot = new StackPane();

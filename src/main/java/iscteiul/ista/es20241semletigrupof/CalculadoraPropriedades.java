@@ -61,11 +61,11 @@ public class CalculadoraPropriedades {
                 })
                 .collect(Collectors.toList());
 
-        // Calcular a área média das propriedades filtradas
+
         OptionalDouble media = propriedadesFiltradas.stream()
                 .mapToDouble(DadosPropriedades::getShapeArea)
                 .average();
 
-        return media.orElse(-1); // Retorna -1 se não houver propriedades correspondentes
+        return media.orElse(-1);
     }
 }
